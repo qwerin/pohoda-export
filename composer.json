@@ -1,0 +1,7 @@
+{
+    "name": "kraag22/pohoda-export-faktur",
+    "description": "Export do POHODA ucetnictvi",
+    "autoload": {
+        "classmap": ["pohoda.php", "invoice.php"]
+    }
+}
