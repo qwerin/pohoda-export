@@ -2,6 +2,7 @@
 
 namespace Pohoda;
 use SimpleXMLElement;
+use DateTime;
 
 class Invoice {
 
