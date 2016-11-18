@@ -1,8 +1,12 @@
 <?php
 
 namespace Pohoda;
+use SimpleXMLElement;
 
 class Invoice {
+
+	public static $NS_INVOICE = 'http://www.stormware.cz/schema/version_2/invoice.xsd';
+
     public $withVAT = false;
 
     public $type = 'issuedInvoice';
@@ -209,22 +213,22 @@ class Invoice {
     }
 
     public function export(SimpleXMLElement $xml) {
-        $xmlInvoice = $xml->addChild("inv:invoice", null, Pohoda::$NS_INVOICE);
+        $xmlInvoice = $xml->addChild("inv:invoice", null, self::$NS_INVOICE);
         $xmlInvoice->addAttribute('version', "2.0");
 
 
-        $this->exportHeader($xmlInvoice->addChild("inv:invoiceHeader", null, Pohoda::$NS_INVOICE));
+        $this->exportHeader($xmlInvoice->addChild("inv:invoiceHeader", null, self::$NS_INVOICE));
         if ($this->withVAT) {
-            $this->exportDetail($xmlInvoice->addChild("inv:invoiceDetail", null, Pohoda::$NS_INVOICE));
+            $this->exportDetail($xmlInvoice->addChild("inv:invoiceDetail", null, self::$NS_INVOICE));
         }
-        $this->exportSummary($xmlInvoice->addChild("inv:invoiceSummary", null, Pohoda::$NS_INVOICE));
+        $this->exportSummary($xmlInvoice->addChild("inv:invoiceSummary", null, self::$NS_INVOICE));
     }
 
     private function exportHeader(SimpleXMLElement $header) {
 
         $header->addChild("inv:invoiceType", $this->type);
         $num = $header->addChild("inv:number");
-        $num->addChild('typ:numberRequested', $this->varNum, Pohoda::$NS_TYPE);
+        $num->addChild('typ:numberRequested', $this->varNum, Export::$NS_TYPE);
 
         $header->addChild("inv:symVar", $this->varNum);
 
@@ -240,24 +244,24 @@ class Invoice {
 
         $classification = $header->addChild("inv:classificationVAT");
         if ($this->withVAT) {
-            $classification->addChild('typ:classificationVATType', 'inland', Pohoda::$NS_TYPE);
+            $classification->addChild('typ:classificationVATType', 'inland', Export::$NS_TYPE);
         }
         else {
-            $classification->addChild('typ:ids', 'UN', Pohoda::$NS_TYPE);
-            $classification->addChild('typ:classificationVATType', 'nonSubsume', Pohoda::$NS_TYPE);
+            $classification->addChild('typ:ids', 'UN', Export::$NS_TYPE);
+            $classification->addChild('typ:classificationVATType', 'nonSubsume', Export::$NS_TYPE);
         }
 
         $accounting = $header->addChild("inv:accounting");
-        $accounting->addChild('typ:ids', $this->accounting, Pohoda::$NS_TYPE);
+        $accounting->addChild('typ:ids', $this->accounting, Export::$NS_TYPE);
 
         $header->addChild("inv:text", $this->text);
 
         $paymentType = $header->addChild("inv:paymentType");
-        $paymentType->addChild('typ:paymentType', $this->paymentType, Pohoda::$NS_TYPE);
-        $paymentType->addChild('typ:ids', $this->paymentTypeCzech, Pohoda::$NS_TYPE);
+        $paymentType->addChild('typ:paymentType', $this->paymentType, Export::$NS_TYPE);
+        $paymentType->addChild('typ:ids', $this->paymentTypeCzech, Export::$NS_TYPE);
 
         $account = $header->addChild("inv:account");
-        $account->addChild('typ:ids', $this->bankShortcut, Pohoda::$NS_TYPE);
+        $account->addChild('typ:ids', $this->bankShortcut, Export::$NS_TYPE);
 
         if (isset($this->note)) {
             $header->addChild("inv:note", $this->note);
@@ -267,13 +271,13 @@ class Invoice {
 
         if (isset($this->contract)) {
             $contract = $header->addChild("inv:contract");
-            $contract->addChild('typ:ids', $this->contract, Pohoda::$NS_TYPE);
+            $contract->addChild('typ:ids', $this->contract, Export::$NS_TYPE);
         }
 
         $header->addChild("inv:symConst", $this->symbolicNumber);
 
         $liq = $header->addChild("inv:liquidation");
-        $liq->addChild('typ:amountHome', $this->priceTotal, Pohoda::$NS_TYPE);
+        $liq->addChild('typ:amountHome', $this->priceTotal, Export::$NS_TYPE);
 
         $myIdentity = $header->addChild("inv:myIdentity");
         $this->exportAddress($myIdentity, $this->myIdentity);
@@ -294,16 +298,16 @@ class Invoice {
         $item->addChild("inv:discountPercentage", '0.0');
 
         $hc = $item->addChild("inv:homeCurrency");
-        $hc->addChild('typ:unitPrice', $this->priceWithoutVAT, Pohoda::$NS_TYPE);
-        $hc->addChild('typ:price', $this->priceWithoutVAT, Pohoda::$NS_TYPE);
-        $hc->addChild('typ:priceVAT', $this->priceOnlyVAT, Pohoda::$NS_TYPE);
-        $hc->addChild('typ:priceSum', $this->priceTotal, Pohoda::$NS_TYPE);
+        $hc->addChild('typ:unitPrice', $this->priceWithoutVAT, Export::$NS_TYPE);
+        $hc->addChild('typ:price', $this->priceWithoutVAT, Export::$NS_TYPE);
+        $hc->addChild('typ:priceVAT', $this->priceOnlyVAT, Export::$NS_TYPE);
+        $hc->addChild('typ:priceSum', $this->priceTotal, Export::$NS_TYPE);
 
     }
 
     private function exportAddress($xml, Array $data) {
 
-        $address = $xml->addChild('typ:address', null, Pohoda::$NS_TYPE);
+        $address = $xml->addChild('typ:address', null, Export::$NS_TYPE);
 
         if (isset($data['company'])) {
             $address->addChild('typ:company', $data['company']);
@@ -344,16 +348,16 @@ class Invoice {
         $summary->addChild("inv:roundingVAT", 'none');
 
         $hc = $summary->addChild("inv:homeCurrency");
-        $hc->addChild('typ:priceNone', $this->priceTotal, Pohoda::$NS_TYPE);
-        $hc->addChild('typ:priceLow', 0, Pohoda::$NS_TYPE);
-        $hc->addChild('typ:priceLowVAT', 0, Pohoda::$NS_TYPE);
-        $hc->addChild('typ:priceLowSum', 0, Pohoda::$NS_TYPE);
-        $hc->addChild('typ:priceHigh', 0, Pohoda::$NS_TYPE);
-        $hc->addChild('typ:priceHighVAT', 0, Pohoda::$NS_TYPE);
-        $hc->addChild('typ:priceHighSum', 0, Pohoda::$NS_TYPE);
+        $hc->addChild('typ:priceNone', $this->priceTotal, Export::$NS_TYPE);
+        $hc->addChild('typ:priceLow', 0, Export::$NS_TYPE);
+        $hc->addChild('typ:priceLowVAT', 0, Export::$NS_TYPE);
+        $hc->addChild('typ:priceLowSum', 0, Export::$NS_TYPE);
+        $hc->addChild('typ:priceHigh', 0, Export::$NS_TYPE);
+        $hc->addChild('typ:priceHighVAT', 0, Export::$NS_TYPE);
+        $hc->addChild('typ:priceHighSum', 0, Export::$NS_TYPE);
 
-        $round = $hc->addChild('typ:round', null, Pohoda::$NS_TYPE);
-        $round->addChild('typ:priceRound', 0, Pohoda::$NS_TYPE);
+        $round = $hc->addChild('typ:round', null, Export::$NS_TYPE);
+        $round->addChild('typ:priceRound', 0, Export::$NS_TYPE);
 
 
 

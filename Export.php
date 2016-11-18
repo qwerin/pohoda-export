@@ -2,10 +2,8 @@
 
 namespace Pohoda;
 
-class Pohoda {
+class Export {
 
-	public static $NS_ADDRESS = 'http://www.stormware.cz/xml/schema/version_2/addressbook.xsd';
-    public static $NS_INVOICE = 'http://www.stormware.cz/schema/version_2/invoice.xsd';
     public static $NS_TYPE = 'http://www.stormware.cz/schema/version_2/type.xsd';
 
     public $ico = '';
