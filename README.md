@@ -81,7 +81,7 @@ $errorsNo = 0; // pokud si pocitate chyby, projevi se to v nazvu souboru
 $pohoda->exportToFile(time(), 'popis', date("Y-m-d_H-i-s"), $errorsNo);
 
 // vypsani na obrazovku jako retezec
-$pohoda->exportToFile(time(), 'popis', date("Y-m-d_H-i-s"));
+$pohoda->exportAsString(time(), 'popis', date("Y-m-d_H-i-s"));
 
 // vypsani na obrazovku jako XML s hlavickou
 $pohoda->exportAsXml(time(), 'popis', date("Y-m-d_H-i-s")
