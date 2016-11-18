@@ -1,5 +1,7 @@
 <?php
 
+namespace Pohoda;
+
 class Invoice {
     public $withVAT = false;
 
