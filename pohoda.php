@@ -9,10 +9,25 @@ class Pohoda {
 
     private $invoices = [];
     private $lastId = 0;
+	private $exportFolder;
 
     public function __construct($ico) {
         $this->ico = $ico;
     }
+
+	/**
+	 * Set absolute path to folder for xml export
+	 * @param string $path
+	 * @return $this
+	 */
+    public function setExportFolder($path) {
+		$path = rtrim($path, DIRECTORY_SEPARATOR);
+		if(is_writable($path) === false)
+			throw new InvalidArgumentException("$path is not writable");
+
+		$this->exportFolder = $path;
+		return $this;
+	}
 
     public function setInvoice($invoice) {
         $this->invoices[] = $invoice;
@@ -25,7 +40,7 @@ class Pohoda {
         if ($errorsNo > 0) {
             $incomplete = '_incomplete';
         }
-        $xml->asXML(dirname(__FILE__).'/'.$fileName.'_lastId-'.$this->lastId.$incomplete.'.xml');
+        $xml->asXML( (is_null($this->exportFolder) ?  dirname(__FILE__) : $this->exportFolder) .'/' . $fileName.'_lastId-'.$this->lastId.$incomplete.'.xml');
     }
 
     public function exportAsXml($exportId, $application, $note = '') {

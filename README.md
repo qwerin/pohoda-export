@@ -78,6 +78,7 @@ else {
 
 // ulozeni do souboru
 $errorsNo = 0; // pokud si pocitate chyby, projevi se to v nazvu souboru
+$pohoda->setExportFolder(__DIR__ . "/export/pohoda"); //mozno nastavit slozku, do ktere bude proveden export
 $pohoda->exportToFile(time(), 'popis', date("Y-m-d_H-i-s"), $errorsNo);
 
 // vypsani na obrazovku jako retezec
