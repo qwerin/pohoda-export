@@ -79,7 +79,7 @@ class Invoice {
         }
 
         if ($isDate) {
-            if (!date_create($value)) {
+            if (!($value instanceof DateTime) && !date_create($value)) {
                 $this->errors[] = $name.'="'.$value.'" - není datum';
             }
         }
@@ -88,6 +88,13 @@ class Invoice {
     private function removeSpaces($value) {
         return preg_replace('/\s+/', '', $value);
     }
+
+    private function convertDate($date) {
+		if($date instanceof DateTime)
+			return $date->format("Y-m-d");
+
+		return $date;
+	}
 
     public function getErrors() {
         $arr = array_merge($this->errors, $this->reqErrors);
@@ -111,19 +118,19 @@ class Invoice {
     }
     public function setDateCreated($value) {
         $this->validateItem('date created', $value, false, false, true);
-        $this->date = $value;
+        $this->date = $this->convertDate($value);
     }
     public function setDateTax($value) {
         $this->validateItem('date tax', $value, false, false, true);
-        $this->dateTax = $value;
+        $this->dateTax = $this->convertDate($value);
     }
     public function setDateAccounting($value) {
         $this->validateItem('date accounting', $value, false, false, true);
-        $this->dateAccounting = $value;
+        $this->dateAccounting = $this->convertDate($value);
     }
     public function setDateDue($value) {
         $this->validateItem('date due', $value, false, false, true);
-        $this->dateDue = $value;
+        $this->dateDue = $this->convertDate($value);
     }
     public function setText($value) {
         $this->validateItem('text', $value, 240);
