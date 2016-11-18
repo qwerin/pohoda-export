@@ -14,10 +14,10 @@ require_once('pohoda.php');
 require_once('invoice.php');
 
 // zadejte ICO
-$pohoda = new Pohoda('01508512');
+$pohoda = new Pohoda\Export('01508512');
 
 // cislo faktury
-$invoice = new Invoice(324342);
+$invoice = new Pohoda\Invoice(324342);
 
 // cena fakutry s DPH
 $price = 1000;
