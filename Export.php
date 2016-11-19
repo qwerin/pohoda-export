@@ -73,12 +73,12 @@ class Export
 			$i++;
 			$dataItem = $xml->addChild("dat:dataPackItem");
 			$dataItem->addAttribute('version', "2.0");
-			$dataItem->addAttribute('id', $exportId . '-' . $i);
+			$dataItem->addAttribute('id', $item->getId());
 
 			$item->export($dataItem);
 
-			if ($item->varNum > $this->lastId) {
-				$this->lastId = $item->varNum;
+			if ($item->getId() > $this->lastId) {
+				$this->lastId = $item->getId();
 			}
 		}
 

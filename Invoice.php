@@ -56,6 +56,10 @@ class Invoice
 
 	}
 
+	public function getId() {
+		return $this->id;
+	}
+
 	public function isValid()
 	{
 		return $this->checkRequired() && empty($this->errors);
