@@ -28,9 +28,6 @@ class Invoice
 	private $accounting;
 	public $symbolicNumber = '0308';
 
-	public $quantity = '1.0';
-	public $coefficient = '1.0';
-
 	public $priceTotal = 0;
 	public $priceWithoutVAT = 0;
 	public $priceOnlyVAT;
@@ -38,6 +35,8 @@ class Invoice
 	 * @var string
 	 */
 	public $contract;
+
+	private $items = [];
 
 	private $myIdentity = [];
 
@@ -126,6 +125,11 @@ class Invoice
 		$arr = array_map($fce, $arr);
 
 		return $arr;
+	}
+
+	public function addItem(InvoiceItem $item)
+	{
+		$this->items[] = $item;
 	}
 
 	public function setVariableNumber($value)
@@ -239,12 +243,6 @@ class Invoice
 		$this->priceOnlyVAT = round($value, 2);
 	}
 
-	public function setQuantity($value)
-	{
-		$this->validateItem('price', $value, false, true);
-		$this->quantity = $value;
-	}
-
 	public function setProviderIdentity($value)
 	{
 		if (isset($value['zip'])) {
@@ -317,7 +315,7 @@ class Invoice
 
 
 		$this->exportHeader($xmlInvoice->addChild("inv:invoiceHeader", null, self::$NS_INVOICE));
-		if ($this->withVAT) {
+		if (!empty($this->items)) {
 			$this->exportDetail($xmlInvoice->addChild("inv:invoiceDetail", null, self::$NS_INVOICE));
 		}
 		$this->exportSummary($xmlInvoice->addChild("inv:invoiceSummary", null, self::$NS_INVOICE));
@@ -394,20 +392,20 @@ class Invoice
 
 	private function exportDetail(SimpleXMLElement $detail)
 	{
+		foreach ($this->items AS $product) {
+			$item = $detail->addChild("inv:invoiceItem");
+			$item->addChild("inv:quantity", $product->getQuantity());
+			$item->addChild("inv:coefficient", $product->getCoefficient());
+			$item->addChild("inv:payVAT", $this->withVAT ? 'true' : 'false');
+			$item->addChild("inv:rateVAT", 'high');
+			$item->addChild("inv:discountPercentage", '0.0');
 
-		$item = $detail->addChild("inv:invoiceItem");
-		$item->addChild("inv:quantity", $this->quantity);
-		$item->addChild("inv:coefficient", $this->coefficient);
-		$item->addChild("inv:payVAT", $this->withVAT ? 'true' : 'false');
-		$item->addChild("inv:rateVAT", 'high');
-		$item->addChild("inv:discountPercentage", '0.0');
-
-		$hc = $item->addChild("inv:homeCurrency");
-		$hc->addChild('typ:unitPrice', $this->priceWithoutVAT, Export::$NS_TYPE);
-		$hc->addChild('typ:price', $this->priceWithoutVAT, Export::$NS_TYPE);
-		$hc->addChild('typ:priceVAT', $this->priceOnlyVAT, Export::$NS_TYPE);
-		$hc->addChild('typ:priceSum', $this->priceTotal, Export::$NS_TYPE);
-
+			$hc = $item->addChild("inv:homeCurrency");
+			$hc->addChild('typ:unitPrice', $this->priceWithoutVAT, Export::$NS_TYPE);
+			$hc->addChild('typ:price', $this->priceWithoutVAT, Export::$NS_TYPE);
+			$hc->addChild('typ:priceVAT', $this->priceOnlyVAT, Export::$NS_TYPE);
+			$hc->addChild('typ:priceSum', $this->priceTotal, Export::$NS_TYPE);
+		}
 	}
 
 	private function exportAddress($xml, Array $data)
