@@ -9,10 +9,23 @@ namespace Pohoda;
 class Validators
 {
 
+	public static function assertBoolean($value)
+	{
+		if (self::isBoolean($value) === false) {
+			throw new \InvalidArgumentException("Value: $value is not numeric");
+		}
+	}
+
+
+	public static function isBoolean($value)
+	{
+		return is_bool($value);
+	}
+
 
 	public static function assertDate($value)
 	{
-		if (!($value instanceof \DateTime) && !date_create($value)) {
+		if (self::isDate($value) === false) {
 			throw new \InvalidArgumentException("Value: $value is not a date");
 		}
 	}
@@ -20,18 +33,13 @@ class Validators
 
 	public static function isDate($value)
 	{
-		try {
-			self::assertDate($value);
-		} catch (\InvalidArgumentException $e) {
-			return false;
-		}
-		return true;
+		return (($value instanceof \DateTime) || date_create($value));
 	}
 
 
 	public static function assertNumeric($value)
 	{
-		if (!is_numeric($value)) {
+		if (self::isNumeric($value) === false) {
 			throw new \InvalidArgumentException("Value: $value is not numeric");
 		}
 	}
@@ -39,18 +47,13 @@ class Validators
 
 	public static function isNumeric($value)
 	{
-		try {
-			self::assertNumeric($value);
-		} catch (\InvalidArgumentException $e) {
-			return false;
-		}
-		return true;
+		return is_numeric($value);
 	}
 
 
 	public static function assertMaxLength($value, $maxLength)
 	{
-		if (strlen($value) > $maxLength) {
+		if (self::isMaxLength($value, $maxLength) === false) {
 			throw new \InvalidArgumentException("Value: $value is length than $maxLength");
 		}
 	}
@@ -58,13 +61,21 @@ class Validators
 
 	public static function isMaxLength($value, $maxLength)
 	{
-		try {
-			self::assertLength($value, $maxLength);
-		} catch (\InvalidArgumentException $e) {
-			return false;
-		}
-		return true;
+		return (strlen($value) <= $maxLength);
 	}
 
+
+	public static function assertInList($value, array $list)
+	{
+		if (self::isInList($value, $list) === false) {
+			throw new \InvalidArgumentException("Value: $value is not in " . explode(",", array_keys($list)));
+		}
+	}
+
+
+	public static function isInList($value, array $list)
+	{
+		return array_key_exists($value, $list);
+	}
 
 }
