@@ -90,23 +90,16 @@ class Invoice
 
 	private function validateItem($name, $value, $maxLength = false, $isNumeric = false, $isDate = false)
 	{
+		try {
+			if ($maxLength)
+				Validators::assertMaxLength($value, $maxLength);
+			if ($isNumeric)
+				Validators::assertNumeric($value);
+			if ($isDate)
+				Validators::assertDate($value);
 
-		if ($maxLength !== false) {
-			if (strlen($value) > $maxLength) {
-				$this->errors[] = $name . '="' . $value . '" - překročilo maximální délku ' . $maxLength;
-			}
-		}
-
-		if ($isNumeric) {
-			if (!is_numeric($value)) {
-				$this->errors[] = $name . '="' . $value . '" - není číslo';
-			}
-		}
-
-		if ($isDate) {
-			if (!($value instanceof DateTime) && !date_create($value)) {
-				$this->errors[] = $name . '="' . $value . '" - není datum';
-			}
+		} catch (\InvalidArgumentException $e) {
+			$this->errors[] = $name . " " . $e->getMessage();
 		}
 	}
 
