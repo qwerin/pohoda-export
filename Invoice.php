@@ -312,7 +312,7 @@ class Invoice
 
 		$header->addChild("inv:invoiceType", $this->type);
 		$num = $header->addChild("inv:number");
-		$num->addChild('typ:numberRequested', $this->varNum, Export::$NS_TYPE);
+		$num->addChild('typ:numberRequested', $this->getId(), Export::$NS_TYPE);
 
 		$header->addChild("inv:symVar", $this->varNum);
 
