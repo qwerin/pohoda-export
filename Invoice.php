@@ -10,22 +10,22 @@ class Invoice
 
 	public static $NS_INVOICE = 'http://www.stormware.cz/schema/version_2/invoice.xsd';
 
-	public $withVAT = false;
+	private $withVAT = false;
 
 	public $type = 'issuedInvoice';
-	public $paymentType = 'draft';
+	private $paymentType = 'draft';
 
-	public $varNum;
-	public $date;
-	public $dateTax;
-	public $dateAccounting;
-	public $dateDue;
-	public $text;
-	public $bankShortcut = 'FIO';
-	public $note;
+	private $varNum;
+	private $date;
+	private $dateTax;
+	private $dateAccounting;
+	private $dateDue;
+	private $text;
+	private $bankShortcut = 'FIO';
+	private $note;
 
 	public $paymentTypeCzech = 'příkazem';
-	public $accounting = '2Fv';
+	private $accounting;
 	public $symbolicNumber = '0308';
 
 	public $quantity = '1.0';
@@ -39,9 +39,9 @@ class Invoice
 	 */
 	public $contract;
 
-	public $myIdentity = [];
+	private $myIdentity = [];
 
-	public $partnerIdentity = [];
+	private $partnerIdentity = [];
 
 	private $id;
 	private $errors = [];
@@ -56,7 +56,15 @@ class Invoice
 
 	}
 
-	public function getId() {
+	public function setWithVat($bool)
+	{
+		if (is_bool($bool) === false)
+			throw new \InvalidArgumentException("setWithVat must use boolead value");
+		$this->withVAT = $bool;
+	}
+
+	public function getId()
+	{
 		return $this->id;
 	}
 
@@ -127,11 +135,6 @@ class Invoice
 		return $arr;
 	}
 
-	public function withVAT($value)
-	{
-		$this->withVAT = $value;
-	}
-
 	public function setVariableNumber($value)
 	{
 		$value = $this->removeSpaces($value);
@@ -173,6 +176,26 @@ class Invoice
 	{
 		$this->validateItem('bank shortcut', $value, 19);
 		$this->bankShortcut = $value;
+	}
+
+	public function setPaymentType($value)
+	{
+		$payments = [
+			"draft" => "příkazem",
+			"cash" => "hotově",
+			"postal" => "složenkou",
+			"delivery" => "dobírka",
+			"creditcard" => "platební kartou",
+			"advance" => "zálohová faktura",
+			"encashment" => "inkasem",
+			"cheque" => "šekem",
+			"compensation" => "zápočtem"
+		];
+
+		if (is_null($value) || !isset($payments[$value])) {
+			$this->errors[] = "Payment type $value is not supported. Use one of these: " . explode(",", array_keys($payments));
+		}
+
 	}
 
 	public function setPaymentTypeCzech($value)
@@ -316,26 +339,29 @@ class Invoice
 
 		$header->addChild("inv:symVar", $this->varNum);
 
-
 		$header->addChild("inv:date", $this->date);
-		$header->addChild("inv:dateTax", $this->dateTax);
-		$header->addChild("inv:dateDue", $this->dateDue);
-
-		if (isset($this->dateAccounting)) {
+		if (!is_null($this->dateTax))
+			$header->addChild("inv:dateTax", $this->dateTax);
+		if (!is_null($this->dateDue))
+			$header->addChild("inv:dateDue", $this->dateDue);
+		if (!is_null($this->dateAccounting))
 			$header->addChild("inv:dateAccounting", $this->dateAccounting);
-		}
 
 
 		$classification = $header->addChild("inv:classificationVAT");
 		if ($this->withVAT) {
+			//tuzemske plneni
 			$classification->addChild('typ:classificationVATType', 'inland', Export::$NS_TYPE);
 		} else {
+			//nezahrnovat do dph
 			$classification->addChild('typ:ids', 'UN', Export::$NS_TYPE);
 			$classification->addChild('typ:classificationVATType', 'nonSubsume', Export::$NS_TYPE);
 		}
 
-		$accounting = $header->addChild("inv:accounting");
-		$accounting->addChild('typ:ids', $this->accounting, Export::$NS_TYPE);
+		if (!is_null($this->accounting)) {
+			$accounting = $header->addChild("inv:accounting");
+			$accounting->addChild('typ:ids', $this->accounting, Export::$NS_TYPE);
+		}
 
 		$header->addChild("inv:text", $this->text);
 
@@ -359,8 +385,10 @@ class Invoice
 
 		$header->addChild("inv:symConst", $this->symbolicNumber);
 
-		$liq = $header->addChild("inv:liquidation");
-		$liq->addChild('typ:amountHome', $this->priceTotal, Export::$NS_TYPE);
+		/** Pouze pri exportu z pohody.
+		 * $liq = $header->addChild("inv:liquidation");
+		 * $liq->addChild('typ:amountHome', $this->priceTotal, Export::$NS_TYPE);
+		 */
 
 		$myIdentity = $header->addChild("inv:myIdentity");
 		$this->exportAddress($myIdentity, $this->myIdentity);
