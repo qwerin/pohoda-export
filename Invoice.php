@@ -172,7 +172,7 @@ class Invoice
 	public function setBank($value)
 	{
 		$this->validateItem('bank shortcut', $value, 19);
-		$this->$bankShortcut = $value;
+		$this->bankShortcut = $value;
 	}
 
 	public function setPaymentTypeCzech($value)
