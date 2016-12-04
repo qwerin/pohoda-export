@@ -12,8 +12,10 @@ class Invoice
 
 	private $withVAT = false;
 
-	public $type = 'issuedInvoice';
+	public $type = 'issuedInvoice'; //normalni faktura
 	private $paymentType = 'draft';
+	private $roundingDocument = 'math2one';
+	private $roundingVAT = 'none';
 
 	private $varNum;
 	private $date;
@@ -24,17 +26,22 @@ class Invoice
 	private $bankShortcut = 'FIO';
 	private $note;
 
-	public $paymentTypeCzech = 'příkazem';
+	private $paymentTypeCzech = 'příkazem';
 	private $accounting;
-	public $symbolicNumber = '0308';
+	private $symbolicNumber = '0308';
 
-	public $priceTotal = 0;
-	public $priceWithoutVAT = 0;
-	public $priceOnlyVAT;
+	private $priceNone;
+	private $priceLow;
+	private $priceLowVAT;
+	private $priceLowSum;
+	private $priceHigh;
+	private $priceHightVAT;
+	private $priceHighSum;
+
 	/** Zakazka
 	 * @var string
 	 */
-	public $contract;
+	private $contract;
 
 	private $items = [];
 
@@ -225,23 +232,69 @@ class Invoice
 		$this->symbolicNumber = $value;
 	}
 
-	public function setPrice($value)
+	/**
+	 * Set price in nullable VAT
+	 * @param float $priceNone
+	 */
+	public function setPriceNone($priceNone)
 	{
-		$this->validateItem('price', $value, false, true);
-		$this->priceTotal = $value;
+		$this->priceNone = $priceNone;
 	}
 
-	public function setPriceWithoutVAT($value)
+	/**
+	 * Set price without VAT (DPH - 15%)
+	 * @param float $priceLow
+	 */
+	public function setPriceLow($priceLow)
 	{
-		$this->validateItem('price without VAT', $value, false, true);
-		$this->priceWithoutVAT = round($value, 2);
+		$this->priceLow = $priceLow;
 	}
 
-	public function setPriceOnlyVAT($value)
+	/**
+	 * Set only VAT (DPH - 15%)
+	 * @param float $priceLowVAT
+	 */
+	public function setPriceLowVAT($priceLowVAT)
 	{
-		$this->validateItem('price only VAT', $value, false, true);
-		$this->priceOnlyVAT = round($value, 2);
+		$this->priceLowVAT = $priceLowVAT;
 	}
+
+	/**
+	 * Set price with VAT (DPH - 15%)
+	 * @param float $priceLowSum
+	 */
+	public function setPriceLowSum($priceLowSum)
+	{
+		$this->priceLowSum = $priceLowSum;
+	}
+
+	/**
+	 * Set price without VAT (DPH - 21%)
+	 * @param float $priceHigh
+	 */
+	public function setPriceHigh($priceHigh)
+	{
+		$this->priceHigh = $priceHigh;
+	}
+
+	/**
+	 * Set only VAT (DPH - 21%)
+	 * @param float $priceHightVAT
+	 */
+	public function setPriceHightVAT($priceHightVAT)
+	{
+		$this->priceHightVAT = $priceHightVAT;
+	}
+
+	/**
+	 * Set price with VAT (DPH - 21%)
+	 * @param float $priceHighSum
+	 */
+	public function setPriceHighSum($priceHighSum)
+	{
+		$this->priceHighSum = $priceHighSum;
+	}
+
 
 	public function setProviderIdentity($value)
 	{
@@ -393,22 +446,43 @@ class Invoice
 	private function exportDetail(SimpleXMLElement $detail)
 	{
 		foreach ($this->items AS $product) {
+			/** @var InvoiceItem $product */
 			$item = $detail->addChild("inv:invoiceItem");
+			$item->addChild("inv:text", $product->getText());
 			$item->addChild("inv:quantity", $product->getQuantity());
+			$item->addChild("inv:unit", $product->getUnit());
 			$item->addChild("inv:coefficient", $product->getCoefficient());
 			$item->addChild("inv:payVAT", $this->withVAT ? 'true' : 'false');
-			$item->addChild("inv:rateVAT", 'high');
-			$item->addChild("inv:discountPercentage", '0.0');
+			if ($product->getRateVAT())
+				$item->addChild("inv:rateVAT", $product->getRateVAT());
+			if ($product->getDiscountPercentage())
+				$item->addChild("inv:discountPercentage", $product->getDiscountPercentage());
 
-			$hc = $item->addChild("inv:homeCurrency");
-			$hc->addChild('typ:unitPrice', $this->priceWithoutVAT, Export::$NS_TYPE);
-			$hc->addChild('typ:price', $this->priceWithoutVAT, Export::$NS_TYPE);
-			$hc->addChild('typ:priceVAT', $this->priceOnlyVAT, Export::$NS_TYPE);
-			$hc->addChild('typ:priceSum', $this->priceTotal, Export::$NS_TYPE);
+			if (!empty($product->getHomeCurrency())) {
+				$hc = $item->addChild("inv:homeCurrency");
+				if ($product->getUnitPrice())
+					$hc->addChild("typ:unitPrice", $product->getUnitPrice(), Export::$NS_TYPE);
+				if($product->getPrice())
+					$hc->addChild("typ:price", $product->getPrice(), Export::$NS_TYPE);
+				if($product->getPriceVAT())
+					$hc->addChild("typ:priceVAT", $product->getPriceVAT(), Export::$NS_TYPE);
+			}
+
+			$item->addChild("inv:note", $product->getNote());
+			$item->addChild("inv:code", $product->getCode());
+			$item->addChild("inv:guarantee", $product->getGuarantee());
+			$item->addChild("inv:guaranteeType", $product->getGuaranteeType());
+
+			//info o skladove polozce
+			if ($product->getStockItem()) {
+				$stock = $item->addChild("inv:stockItem");
+				$stockItem = $stock->addChild("typ:stockItem", null, Export::$NS_TYPE);
+				$stockItem->addChild("typ:ids", $product->getStockItem(), Export::$NS_TYPE);
+			}
 		}
 	}
 
-	private function exportAddress($xml, Array $data)
+	private function exportAddress(SimpleXMLElement $xml, Array $data)
 	{
 
 		$address = $xml->addChild('typ:address', null, Export::$NS_TYPE);
@@ -449,21 +523,27 @@ class Invoice
 	private function exportSummary(SimpleXMLElement $summary)
 	{
 
-		$summary->addChild("inv:roundingDocument", 'up2one');
-		$summary->addChild("inv:roundingVAT", 'none');
+		$summary->addChild('inv:roundingDocument', $this->roundingDocument); //matematicky na koruny
+		$summary->addChild('inv:roundingVAT', $this->roundingVAT);
 
 		$hc = $summary->addChild("inv:homeCurrency");
-		$hc->addChild('typ:priceNone', $this->priceTotal, Export::$NS_TYPE);
-		$hc->addChild('typ:priceLow', 0, Export::$NS_TYPE);
-		$hc->addChild('typ:priceLowVAT', 0, Export::$NS_TYPE);
-		$hc->addChild('typ:priceLowSum', 0, Export::$NS_TYPE);
-		$hc->addChild('typ:priceHigh', 0, Export::$NS_TYPE);
-		$hc->addChild('typ:priceHighVAT', 0, Export::$NS_TYPE);
-		$hc->addChild('typ:priceHighSum', 0, Export::$NS_TYPE);
+		if(is_null($this->priceNone) === false)
+			$hc->addChild('typ:priceNone', $this->priceNone, Export::$NS_TYPE); //cena v nulove sazbe dph
+		if(is_null($this->priceLow) === false)
+			$hc->addChild('typ:priceLow', $this->priceLow, Export::$NS_TYPE); //cena bez dph ve snizene sazbe (15)
+		if(is_null($this->priceLowVAT) === false)
+			$hc->addChild('typ:priceLowVAT', $this->priceLowVAT, Export::$NS_TYPE); //dph ve snizene sazbe
+		if(is_null($this->priceLowSum) === false)
+			$hc->addChild('typ:priceLowSum', $this->priceLowSum, Export::$NS_TYPE); //s dph ve snizene sazbe
+		if(is_null($this->priceHigh) === false)
+			$hc->addChild('typ:priceHigh', $this->priceHigh, Export::$NS_TYPE); //cena bez dph ve zvysene sazbe (21)
+		if(is_null($this->priceHightVAT) === false)
+			$hc->addChild('typ:priceHighVAT', $this->priceHightVAT, Export::$NS_TYPE);
+		if(is_null($this->priceHighSum) === false)
+			$hc->addChild('typ:priceHighSum', $this->priceHighSum, Export::$NS_TYPE);
 
 		$round = $hc->addChild('typ:round', null, Export::$NS_TYPE);
-		$round->addChild('typ:priceRound', 0, Export::$NS_TYPE);
-
+		$round->addChild('typ:priceRound', 0, Export::$NS_TYPE); //Celková suma zaokrouhleni
 
 	}
 }
