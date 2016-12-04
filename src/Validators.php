@@ -65,15 +65,15 @@ class Validators
 	}
 
 
-	public static function assertInList($value, array $list)
+	public static function assertKeyInList($value, array $list)
 	{
-		if (self::isInList($value, $list) === false) {
+		if (self::isKeyInList($value, $list) === false) {
 			throw new \InvalidArgumentException("Value: $value is not in " . explode(",", array_keys($list)));
 		}
 	}
 
 
-	public static function isInList($value, array $list)
+	public static function isKeyInList($value, array $list)
 	{
 		return array_key_exists($value, $list);
 	}
