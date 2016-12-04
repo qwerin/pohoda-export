@@ -27,13 +27,19 @@ class Export
 	{
 		$path = rtrim($path, DIRECTORY_SEPARATOR);
 		if (is_writable($path) === false)
-			throw new InvalidArgumentException("$path is not writable");
+			throw new \InvalidArgumentException("$path is not writable");
 
 		$this->exportFolder = $path;
 		return $this;
 	}
 
 	public function setInvoice($invoice)
+	{
+		trigger_error('DEPRECATED: use addInvoice() instead');
+		$this->invoices[] = $invoice;
+	}
+
+	public function addInvoice($invoice)
 	{
 		$this->invoices[] = $invoice;
 	}
