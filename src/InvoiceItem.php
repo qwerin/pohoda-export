@@ -19,19 +19,19 @@ class InvoiceItem
 	private $homeCurrency = [
 		"unitPrice" => null,
 		"price" => null,
-		"priceVat" => null,
-		"priceSum" => null,
+		"priceVAT" => null,
+		"priceSum" => null, //only for export from pohoda
 	];
 	private $foreignCurrency = [
 		"unitPrice" => null,
 		"price" => null,
-		"priceVat" => null,
-		"priceSum" => null,
+		"priceVAT" => null,
+		"priceSum" => null, //only for export from pohoda
 	];
 	private $note;
 	private $code;
 	private $guarantee = 48;
-	private $guaranteeType = "months";
+	private $guaranteeType = "month";
 
 	private $stockItem; //odkaz na skladovou zasobu
 
@@ -216,7 +216,7 @@ class InvoiceItem
 		$this->homeCurrency["price"] = $price;
 	}
 
-	public function getPriceVat()
+	public function getPriceVAT()
 	{
 		return $this->homeCurrency["priceVAT"];
 	}
@@ -224,7 +224,7 @@ class InvoiceItem
 	/**
 	 * @param float $price
 	 */
-	public function setPriceVat($price)
+	public function setPriceVAT($price)
 	{
 		//only vat itself
 		Validators::isNumeric($price);
@@ -241,6 +241,7 @@ class InvoiceItem
 	public function setPriceSum($price)
 	{
 		//price with vat
+		trigger_error("PriceSUM is only for export from POHODA");
 		Validators::isNumeric($price);
 		$this->homeCurrency["priceSum"] = $price;
 	}
