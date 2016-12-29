@@ -39,7 +39,7 @@ class Export
 		$this->invoices[] = $invoice;
 	}
 
-	public function addInvoice($invoice)
+	public function addInvoice(Invoice $invoice)
 	{
 		$this->invoices[] = $invoice;
 	}
