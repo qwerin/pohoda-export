@@ -68,9 +68,20 @@ class Export
 		echo $xml->asXML();
 	}
 
+	public function getIco() {
+		if(!is_null($this->ico) && $this->ico !== '') {
+			return $this->ico;
+		} elseif(count($this->invoices)) {
+			//ico from invoice
+			return $this->invoices[0]->getProviderIdentity()['ico'];
+		} else {
+			throw new \Exception('ICO must be defined');
+		}
+	}
+
 	private function export($exportId, $application, $note = '')
 	{
-		$xmlText = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<dat:dataPack id=\"" . $exportId . "\" ico=\"" . $this->ico . "\" application=\"" . $application . "\" version = \"2.0\" note=\"" . $note . "\" xmlns:dat=\"http://www.stormware.cz/schema/version_2/data.xsd\"></dat:dataPack>";
+		$xmlText = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<dat:dataPack id=\"" . $exportId . "\" ico=\"" . $this->getIco() . "\" application=\"" . $application . "\" version = \"2.0\" note=\"" . $note . "\" xmlns:dat=\"http://www.stormware.cz/schema/version_2/data.xsd\"></dat:dataPack>";
 		$xml = simplexml_load_string($xmlText);
 
 		$i = 0;

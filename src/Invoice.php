@@ -327,6 +327,15 @@ class Invoice
 		$this->myIdentity = $value;
 	}
 
+	/**
+	 * Get shop identity
+	 * @return array
+	 */
+	public function getProviderIdentity() {
+		return $this->myIdentity;
+	}
+
+
 	public function setPurchaserIdentity($value)
 	{
 		if (isset($value['zip'])) {
