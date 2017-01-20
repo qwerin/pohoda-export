@@ -345,6 +345,9 @@ class Invoice
 			$value['ico'] = $this->removeSpaces($value['ico']);
 		}
 
+		if (isset($value['name'])) {
+			$this->validateItem('purchaser - name', $value['name'], 32);
+		}
 		if (isset($value['company'])) {
 			$this->validateItem('purchaser - company', $value['company'], 96);
 		}
@@ -362,9 +365,6 @@ class Invoice
 		}
 		if (isset($value['ico'])) {
 			$this->validateItem('purchaser - ico', $value['ico'], 15, true);
-		}
-		if (isset($value['number'])) {
-			$this->errors[] = 'purchaser nesmi mit nastaven type: number';
 		}
 
 		$this->partnerIdentity = $value;
@@ -498,6 +498,10 @@ class Invoice
 
 		if (isset($data['company'])) {
 			$address->addChild('typ:company', $data['company']);
+		}
+
+		if (isset($data['name'])) {
+			$address->addChild('typ:name', $data['name']);
 		}
 
 		if (isset($data['division'])) {
