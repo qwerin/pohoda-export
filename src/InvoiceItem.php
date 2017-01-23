@@ -125,6 +125,22 @@ class InvoiceItem
 	}
 
 	/**
+	 * @param bool $bool
+	 */
+	public function setWithVAT($bool = true)
+	{
+		$this->setPayVAT($bool);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isWithVAT()
+	{
+		return $this->isPayVAT();
+	}
+
+	/**
 	 * @return
 	 */
 	public function getRateVAT()
