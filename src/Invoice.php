@@ -367,6 +367,13 @@ class Invoice
 			$this->validateItem('purchaser - ico', $value['ico'], 15, true);
 		}
 
+		if (isset($value['phone'])) {
+			$this->validateItem('purchaser - phone', $value['phone'], 24);
+		}
+		if (isset($value['email'])) {
+			$this->validateItem('purchaser - email', $value['email'], 98);
+		}
+
 		$this->partnerIdentity = $value;
 	}
 
@@ -532,6 +539,14 @@ class Invoice
 
 		if (isset($data['dic'])) {
 			$address->addChild('typ:dic', $data['dic']);
+		}
+
+		if (isset($data['phone'])) {
+			$address->addChild('typ:mobilPhone', $data['phone']);
+		}
+
+		if (isset($data['email'])) {
+			$address->addChild('typ:email', $data['email']);
 		}
 	}
 
