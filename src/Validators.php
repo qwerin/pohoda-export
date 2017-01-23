@@ -61,7 +61,7 @@ class Validators
 
 	public static function isMaxLength($value, $maxLength)
 	{
-		return (strlen($value) <= $maxLength);
+		return (mb_strlen($value) <= $maxLength);
 	}
 
 
