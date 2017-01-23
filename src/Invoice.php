@@ -26,7 +26,7 @@ class Invoice
 	private $bankShortcut = 'FIO';
 	private $note;
 
-	private $paymentTypeCzech = 'příkazem';
+	private $paymentTypeCzech; //identifikator formy uhrady
 	private $accounting;
 	private $symbolicNumber = '0308';
 
@@ -420,7 +420,9 @@ class Invoice
 
 		$paymentType = $header->addChild("inv:paymentType");
 		$paymentType->addChild('typ:paymentType', $this->paymentType, Export::$NS_TYPE);
-		$paymentType->addChild('typ:ids', $this->paymentTypeCzech, Export::$NS_TYPE);
+		if(!is_null($this->paymentTypeCzech)) {
+			$paymentType->addChild('typ:ids', $this->paymentTypeCzech, Export::$NS_TYPE);
+		}
 
 		$account = $header->addChild("inv:account");
 		$account->addChild('typ:ids', $this->bankShortcut, Export::$NS_TYPE);
