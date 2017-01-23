@@ -461,7 +461,7 @@ class Invoice
 			$item->addChild("inv:quantity", $product->getQuantity());
 			$item->addChild("inv:unit", $product->getUnit());
 			$item->addChild("inv:coefficient", $product->getCoefficient());
-			$item->addChild("inv:payVAT", $this->withVAT ? 'true' : 'false');
+			$item->addChild("inv:payVAT", $product->isPayVAT() ? 'true' : 'false');
 			if ($product->getRateVAT())
 				$item->addChild("inv:rateVAT", $product->getRateVAT());
 			if ($product->getDiscountPercentage())
