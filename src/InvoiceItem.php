@@ -8,24 +8,29 @@ namespace Pohoda;
 
 class InvoiceItem
 {
+	const VAT_NONE = "none";
+	const VAT_HIGH = "high";
+	const VAT_LOW = "low";
+	const VAT_THIRD = "third";
+
 	private $text;
 	private $quantity = '1.0';
 	private $unit;
 	private $coefficient = '1.0';
-	private $payVAT = false; //pouze textove polozky
+	private $payVAT = false; //unitPrice is with (true) or without (false) VAT
 	private $rateVAT;
 	private $percentVAT;
 	private $discountPercentage;
 	private $homeCurrency = [
-		"unitPrice" => null,
-		"price" => null,
-		"priceVAT" => null,
+		"unitPrice" => null, //mandatory
+		"price" => null, //optional
+		"priceVAT" => null, //optional
 		"priceSum" => null, //only for export from pohoda
 	];
 	private $foreignCurrency = [
-		"unitPrice" => null,
-		"price" => null,
-		"priceVAT" => null,
+		"unitPrice" => null, //mandatory
+		"price" => null, //optional
+		"priceVAT" => null, //optional
 		"priceSum" => null, //only for export from pohoda
 	];
 	private $note;
@@ -133,10 +138,10 @@ class InvoiceItem
 	public function setRateVAT($rateVAT)
 	{
 		$rates = [
-			"none" => "bez DPH",
-			"high" => "Základní sazba",
-			"low" => "Snížena sazba",
-			"third" => "3. sazba (pouze SK verze)"
+			self::VAT_NONE => "bez DPH",
+			self::VAT_HIGH => "Základní sazba",
+			self::VAT_LOW => "Snížena sazba",
+			self::VAT_THIRD => "2. snížená sazba"
 		];
 
 		Validators::assertKeyInList($rateVAT, $rates);
