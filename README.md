@@ -72,7 +72,12 @@ $invoice->setPurchaserIdentity([
     "street" => "Nejaka ulice 80/3",
     "zip" => "160 00",
     "ico" => "034234"]);
-
+//muzeme take zadat jinou dorucovaci adresu
+$invoice->setPurchaserIdentity([
+	"name" => "Jarda Ferda",
+    "city" => "Brno",
+    "street" => "Jina ulice10",
+    "zip" => "165 00"], $invoice::SHIPTO);
 ```
 
 ## Validace

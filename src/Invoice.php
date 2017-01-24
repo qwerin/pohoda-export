@@ -7,6 +7,8 @@ use DateTime;
 
 class Invoice
 {
+	const ADDRESS = "address";
+	const SHIPTO = "shipToAddress";
 
 	public static $NS_INVOICE = 'http://www.stormware.cz/schema/version_2/invoice.xsd';
 
@@ -298,30 +300,22 @@ class Invoice
 
 	public function setProviderIdentity($value)
 	{
-		if (isset($value['zip'])) {
-			$value['zip'] = $this->removeSpaces($value['zip']);
+		if (isset($value['company'])) {
+			$this->validateItem('provider - company', $value['company'], 96);
 		}
 		if (isset($value['ico'])) {
 			$value['ico'] = $this->removeSpaces($value['ico']);
-		}
-
-		if (isset($value['company'])) {
-			$this->validateItem('provider - company', $value['company'], 96);
+			$this->validateItem('provider - ico', $value['ico'], 15, true);
 		}
 		if (isset($value['street'])) {
 			$this->validateItem('provider - street', $value['street'], 64);
 		}
 		if (isset($value['zip'])) {
+			$value['zip'] = $this->removeSpaces($value['zip']);
 			$this->validateItem('provider - zip', $value['zip'], 15, true);
 		}
 		if (isset($value['city'])) {
 			$this->validateItem('provider - city', $value['city'], 45);
-		}
-		if (isset($value['ico'])) {
-			$this->validateItem('provider - ico', $value['ico'], 15, true);
-		}
-		if (isset($value['number'])) {
-			$this->validateItem('provider - number', $value['number'], 10);
 		}
 
 		$this->myIdentity = $value;
@@ -336,17 +330,30 @@ class Invoice
 	}
 
 
-	public function setPurchaserIdentity($value)
+	/**
+	 * @param $value
+	 * @param string $type = (address, shipToAddress)
+	 */
+	public function setPurchaserIdentity($value, $type = self::ADDRESS)
 	{
-		if (isset($value['zip'])) {
-			$value['zip'] = $this->removeSpaces($value['zip']);
-		}
-		if (isset($value['ico'])) {
-			$value['ico'] = $this->removeSpaces($value['ico']);
-		}
-
 		if (isset($value['name'])) {
 			$this->validateItem('purchaser - name', $value['name'], 32);
+		}
+		if (isset($value['street'])) {
+			$this->validateItem('purchaser - street', $value['street'], 64);
+		}
+		if (isset($value['zip'])) {
+			$value['zip'] = $this->removeSpaces($value['zip']);
+			$this->validateItem('purchaser - zip', $value['zip'], 15, true);
+		}
+		if (isset($value['city'])) {
+			$this->validateItem('purchaser - city', $value['city'], 45);
+		}
+		if (isset($value['phone'])) {
+			$this->validateItem('purchaser - phone', $value['phone'], 24);
+		}
+		if (isset($value['email'])) {
+			$this->validateItem('purchaser - email', $value['email'], 98);
 		}
 		if (isset($value['company'])) {
 			$this->validateItem('purchaser - company', $value['company'], 96);
@@ -354,27 +361,17 @@ class Invoice
 		if (isset($value['division'])) {
 			$this->validateItem('purchaser - division', $value['division'], 32);
 		}
-		if (isset($value['street'])) {
-			$this->validateItem('purchaser - street', $value['street'], 64);
-		}
-		if (isset($value['zip'])) {
-			$this->validateItem('purchaser - zip', $value['zip'], 15, true);
-		}
-		if (isset($value['city'])) {
-			$this->validateItem('purchaser - city', $value['city'], 45);
-		}
 		if (isset($value['ico'])) {
+			$value['ico'] = $this->removeSpaces($value['ico']);
 			$this->validateItem('purchaser - ico', $value['ico'], 15, true);
 		}
-
-		if (isset($value['phone'])) {
-			$this->validateItem('purchaser - phone', $value['phone'], 24);
-		}
-		if (isset($value['email'])) {
-			$this->validateItem('purchaser - email', $value['email'], 98);
+		if (isset($value['dic'])) {
+			$value['dic'] = $this->removeSpaces($value['dic']);
+			$this->validateItem('purchaser - dic', $value['dic'], 18);
 		}
 
-		$this->partnerIdentity = $value;
+
+		$this->partnerIdentity[$type] = $value;
 	}
 
 	public function export(SimpleXMLElement $xml)
@@ -456,8 +453,8 @@ class Invoice
 		$this->exportAddress($myIdentity, $this->myIdentity);
 
 		$partnerIdentity = $header->addChild("inv:partnerIdentity");
-		$this->exportAddress($partnerIdentity, $this->partnerIdentity);
-
+		$this->exportAddress($partnerIdentity, $this->partnerIdentity[self::ADDRESS]);
+		$this->exportAddress($partnerIdentity, $this->partnerIdentity[self::SHIPTO], self::SHIPTO);
 
 	}
 
@@ -500,10 +497,10 @@ class Invoice
 		}
 	}
 
-	private function exportAddress(SimpleXMLElement $xml, Array $data)
+	private function exportAddress(SimpleXMLElement $xml, Array $data, $type = "address")
 	{
 
-		$address = $xml->addChild('typ:address', null, Export::$NS_TYPE);
+		$address = $xml->addChild('typ:'.$type, null, Export::$NS_TYPE);
 
 		if (isset($data['company'])) {
 			$address->addChild('typ:company', $data['company']);
@@ -548,6 +545,7 @@ class Invoice
 		if (isset($data['email'])) {
 			$address->addChild('typ:email', $data['email']);
 		}
+
 	}
 
 	private function exportSummary(SimpleXMLElement $summary)
