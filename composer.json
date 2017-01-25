@@ -1,5 +1,5 @@
 {
-    "name": "kraag22/pohoda-export-faktur",
+    "name": "unio/pohoda-export",
     "description": "Export do POHODA ucetnictvi",
     "autoload": {
         "psr-4": {
