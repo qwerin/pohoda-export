@@ -24,6 +24,7 @@ class Invoice
 	private $dateTax;
 	private $dateAccounting;
 	private $dateDue;
+	private $dateOrder; //datum objednani
 	private $text;
 	private $bankShortcut = 'FIO';
 	private $note;
@@ -39,6 +40,8 @@ class Invoice
 	private $priceHigh;
 	private $priceHightVAT;
 	private $priceHighSum;
+
+	private $numberOrder; //vlastni cislo objednavky
 
 	/** Zakazka
 	 * @var string
@@ -141,6 +144,11 @@ class Invoice
 		$this->items[] = $item;
 	}
 
+	public function setNumberOrder($order)
+	{
+		$this->numberOrder = $order;
+	}
+
 	public function setVariableNumber($value)
 	{
 		$value = $this->removeSpaces($value);
@@ -170,6 +178,11 @@ class Invoice
 	{
 		$this->validateItem('date due', $value, false, false, true);
 		$this->dateDue = $this->convertDate($value);
+	}
+
+	public function setDateOrder($value) {
+		$this->validateItem('date order', $value, false, false, true);
+		$this->dateOrder = $this->convertDate($value);
 	}
 
 	public function setText($value)
@@ -456,6 +469,13 @@ class Invoice
 		$this->exportAddress($partnerIdentity, $this->partnerIdentity[self::ADDRESS]);
 		$this->exportAddress($partnerIdentity, $this->partnerIdentity[self::SHIPTO], self::SHIPTO);
 
+		if(isset($this->numberOrder)) {
+			$header->addChild("inv:numberOrder", $this->numberOrder);
+		}
+
+		if(isset($this->dateOrder)) {
+			$header->addChild("inv:dateOrder", $this->dateOrder);
+		}
 	}
 
 	private function exportDetail(SimpleXMLElement $detail)

@@ -54,6 +54,11 @@ $invoice->setDateCreated('2014-01-24');
 $invoice->setDateTax('2014-02-01');
 // datum splatnosti
 $invoice->setDateDue('2014-02-04');
+//datum vytvoreni objednavky
+$invoice->setDateOrder('2014-01-24');
+
+//cislo objednavky v eshopu
+$invoice->setNumberOrder(254);
 
 // nastaveni identity dodavatele
 $invoice->setProviderIdentity([
