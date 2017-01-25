@@ -546,6 +546,10 @@ class Invoice
 			$address->addChild('typ:number', $data['number']);
 		}
 
+		if (isset($data['country'])) {
+			$address->addChild('typ:country')->addChild('typ:ids',  $data['country']);
+		}
+
 		if (isset($data['zip'])) {
 			$address->addChild('typ:zip', $data['zip']);
 		}
