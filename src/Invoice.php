@@ -29,7 +29,7 @@ class Invoice
 	private $bankShortcut = 'FIO';
 	private $note;
 
-	private $paymentTypeCzech; //identifikator formy uhrady
+	private $paymentTypeString; //forma uhrady
 	private $accounting;
 	private $symbolicNumber = '0308';
 
@@ -217,10 +217,16 @@ class Invoice
 
 	}
 
+	/** @deprecated */
 	public function setPaymentTypeCzech($value)
 	{
+		return $this->setPaymentTypeString($value);
+	}
+
+	public function setPaymentTypeString($value)
+	{
 		$this->validateItem('payment type czech', $value, 20);
-		$this->paymentTypeCzech = $value;
+		$this->paymentTypeSting = $value;
 	}
 
 	public function setAccounting($value)
@@ -437,8 +443,8 @@ class Invoice
 
 		$paymentType = $header->addChild("inv:paymentType");
 		$paymentType->addChild('typ:paymentType', $this->paymentType, Export::$NS_TYPE);
-		if(!is_null($this->paymentTypeCzech)) {
-			$paymentType->addChild('typ:ids', $this->paymentTypeCzech, Export::$NS_TYPE);
+		if(!is_null($this->paymentTypeSting)) {
+			$paymentType->addChild('typ:ids', $this->paymentTypeSting, Export::$NS_TYPE);
 		}
 
 		$account = $header->addChild("inv:account");
