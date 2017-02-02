@@ -219,7 +219,7 @@ class Invoice
 
 	public function setPaymentTypeCzech($value)
 	{
-		$this->validateItem('payment type czech', $value, 19);
+		$this->validateItem('payment type czech', $value, 20);
 		$this->paymentTypeCzech = $value;
 	}
 
