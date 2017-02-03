@@ -2,6 +2,8 @@
 
 namespace Pohoda;
 
+use Pohoda\Export\Address;
+
 class Export
 {
 
@@ -10,6 +12,8 @@ class Export
 	public $ico = '';
 
 	private $invoices = [];
+	private $address = [];
+
 	private $lastId = 0;
 	private $exportFolder;
 
@@ -43,6 +47,13 @@ class Export
 	{
 		$this->invoices[] = $invoice;
 	}
+
+	public function addAddress(Address $address)
+	{
+		if($address->getIdentity()->hasId()) //only if has ID
+			$this->address[] = $address;
+	}
+
 
 	public function exportToFile($exportId, $application, $fileName, $errorsNo, $note = '')
 	{
@@ -86,11 +97,24 @@ class Export
 		application=\"" . $application . "\" version = \"2.0\" note=\"" . $note . "\" 
 		xmlns:dat=\"http://www.stormware.cz/schema/version_2/data.xsd\" 
 		xmlns:typ=\"". self::$NS_TYPE ."\"
-		xmlns:inv=\"". Invoice::$NS_INVOICE . "\">
+		xmlns:inv=\"". Invoice::$NS_INVOICE . "\"
+		xmlns:adb=\"" . Address::NS . "\">
 		</dat:dataPack>";
 		$xml = simplexml_load_string($xmlText);
 
-		$i = 0;
+		$i = $a = 0;
+
+		/** @var Address $item */
+		foreach ($this->address as $item) {
+			$a++;
+			$dataItem = $xml->addChild("dat:dataPackItem");
+			$dataItem->addAttribute('version', "2.0");
+			$dataItem->addAttribute('id', $item->getId());
+
+			$item->export($dataItem);
+		}
+
+
 		/** @var Invoice $item */
 		foreach ($this->invoices as $item) {
 			$i++;

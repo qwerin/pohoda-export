@@ -2,6 +2,7 @@
 
 namespace Pohoda;
 
+use Pohoda\Export\Address;
 use SimpleXMLElement;
 use DateTime;
 
@@ -52,7 +53,8 @@ class Invoice
 
 	private $myIdentity = [];
 
-	private $partnerIdentity = [];
+	/** @var Address */
+	private $customerAddress;
 
 	private $id;
 	private $errors = [];
@@ -62,9 +64,6 @@ class Invoice
 	public function __construct($id)
 	{
 		$this->id = $id;
-		$this->setProviderIdentity([]);
-		$this->setPurchaserIdentity([]);
-
 	}
 
 	public function setWithVat($bool)
@@ -350,48 +349,12 @@ class Invoice
 
 
 	/**
-	 * @param $value
-	 * @param string $type = (address, shipToAddress)
+	 * @param Address $address
 	 */
-	public function setPurchaserIdentity($value, $type = self::ADDRESS)
-	{
-		if (isset($value['name'])) {
-			$this->validateItem('purchaser - name', $value['name'], 32);
-		}
-		if (isset($value['street'])) {
-			$this->validateItem('purchaser - street', $value['street'], 64);
-		}
-		if (isset($value['zip'])) {
-			$value['zip'] = $this->removeSpaces($value['zip']);
-			$this->validateItem('purchaser - zip', $value['zip'], 15, true);
-		}
-		if (isset($value['city'])) {
-			$this->validateItem('purchaser - city', $value['city'], 45);
-		}
-		if (isset($value['phone'])) {
-			$this->validateItem('purchaser - phone', $value['phone'], 24);
-		}
-		if (isset($value['email'])) {
-			$this->validateItem('purchaser - email', $value['email'], 98);
-		}
-		if (isset($value['company'])) {
-			$this->validateItem('purchaser - company', $value['company'], 96);
-		}
-		if (isset($value['division'])) {
-			$this->validateItem('purchaser - division', $value['division'], 32);
-		}
-		if (isset($value['ico'])) {
-			$value['ico'] = $this->removeSpaces($value['ico']);
-			$this->validateItem('purchaser - ico', $value['ico'], 15, true);
-		}
-		if (isset($value['dic'])) {
-			$value['dic'] = $this->removeSpaces($value['dic']);
-			$this->validateItem('purchaser - dic', $value['dic'], 18);
-		}
-
-
-		$this->partnerIdentity[$type] = $value;
+	public function setCustomerAddress(Address $address) {
+		$this->customerAddress = $address;
 	}
+
 
 	public function export(SimpleXMLElement $xml)
 	{
@@ -472,8 +435,7 @@ class Invoice
 		$this->exportAddress($myIdentity, $this->myIdentity);
 
 		$partnerIdentity = $header->addChild("inv:partnerIdentity");
-		$this->exportAddress($partnerIdentity, $this->partnerIdentity[self::ADDRESS]);
-		$this->exportAddress($partnerIdentity, $this->partnerIdentity[self::SHIPTO], self::SHIPTO);
+		$this->customerAddress->exportAddress($partnerIdentity);
 
 		if(isset($this->numberOrder)) {
 			$header->addChild("inv:numberOrder", $this->numberOrder);

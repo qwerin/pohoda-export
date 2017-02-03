@@ -71,18 +71,24 @@ $invoice->setProviderIdentity([
     "dic" => "CZ034234"]);
     
 // nastaveni identity prijemce
-$invoice->setPurchaserIdentity([
-    "company" => "Firma s.r.o.",
-    "city" => "Praha",
-    "street" => "Nejaka ulice 80/3",
-    "zip" => "160 00",
-    "ico" => "034234"]);
-//muzeme take zadat jinou dorucovaci adresu
-$invoice->setPurchaserIdentity([
-	"name" => "Jarda Ferda",
-    "city" => "Brno",
-    "street" => "Jina ulice10",
-    "zip" => "165 00"], $invoice::SHIPTO);
+$customer = [
+                "company" => "Firma s.r.o.",
+                "city" => "Praha",
+                "street" => "Nejaka ulice",
+                "number" => "80/3",
+                "zip" => "160 00",
+                "ico" => "034234",
+                "dic" => "CZ034234",
+                ];
+$customerAddress = 
+	new Pohoda\Export\Address(
+    	new Pohoda\Object\Identity(
+        	z125, //identifikator zakaznika [pokud neni zadan, neprovede se import do adresare]
+            new Pohoda\Object\Address($customer), //adresa zakaznika
+            new Pohoda\Object\Address(["street" => "Pod Mostem"]) //pripadne dodaci adresa
+        )
+    );
+$invoice->setCustomerAddress($customerAddress);
 ```
 
 ## Validace
@@ -91,7 +97,8 @@ $invoice->setPurchaserIdentity([
 
 if ($invoice->isValid()) {
     // pokud je faktura validni, pridame ji do exportu
-    $pohoda->setInvoice($invoice);
+    $pohoda->addInvoice($invoice);
+    $pohoda->addAddress($customerAddress);
 }
 else {
     var_dump($invoice->getErrors());
