@@ -97,7 +97,7 @@ class Export
 		application=\"" . $application . "\" version = \"2.0\" note=\"" . $note . "\" 
 		xmlns:dat=\"http://www.stormware.cz/schema/version_2/data.xsd\" 
 		xmlns:typ=\"". self::$NS_TYPE ."\"
-		xmlns:inv=\"". Invoice::$NS_INVOICE . "\"
+		xmlns:inv=\"". Invoice::NS . "\"
 		xmlns:adb=\"" . Address::NS . "\">
 		</dat:dataPack>";
 		$xml = simplexml_load_string($xmlText);

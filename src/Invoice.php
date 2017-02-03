@@ -8,10 +8,7 @@ use DateTime;
 
 class Invoice
 {
-	const ADDRESS = "address";
-	const SHIPTO = "shipToAddress";
-
-	public static $NS_INVOICE = 'http://www.stormware.cz/schema/version_2/invoice.xsd';
+	const NS = 'http://www.stormware.cz/schema/version_2/invoice.xsd';
 
 	private $withVAT = false;
 
@@ -358,15 +355,15 @@ class Invoice
 
 	public function export(SimpleXMLElement $xml)
 	{
-		$xmlInvoice = $xml->addChild("inv:invoice", null, self::$NS_INVOICE);
+		$xmlInvoice = $xml->addChild("inv:invoice", null, self::NS);
 		$xmlInvoice->addAttribute('version', "2.0");
 
 
-		$this->exportHeader($xmlInvoice->addChild("inv:invoiceHeader", null, self::$NS_INVOICE));
+		$this->exportHeader($xmlInvoice->addChild("inv:invoiceHeader", null, self::NS));
 		if (!empty($this->items)) {
-			$this->exportDetail($xmlInvoice->addChild("inv:invoiceDetail", null, self::$NS_INVOICE));
+			$this->exportDetail($xmlInvoice->addChild("inv:invoiceDetail", null, self::NS));
 		}
-		$this->exportSummary($xmlInvoice->addChild("inv:invoiceSummary", null, self::$NS_INVOICE));
+		$this->exportSummary($xmlInvoice->addChild("inv:invoiceSummary", null, self::NS));
 	}
 
 	private function exportHeader(SimpleXMLElement $header)
