@@ -81,7 +81,13 @@ class Export
 
 	private function export($exportId, $application, $note = '')
 	{
-		$xmlText = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<dat:dataPack id=\"" . $exportId . "\" ico=\"" . $this->getIco() . "\" application=\"" . $application . "\" version = \"2.0\" note=\"" . $note . "\" xmlns:dat=\"http://www.stormware.cz/schema/version_2/data.xsd\"></dat:dataPack>";
+		$xmlText = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n
+		<dat:dataPack id=\"" . $exportId . "\" ico=\"" . $this->getIco() . "\" 
+		application=\"" . $application . "\" version = \"2.0\" note=\"" . $note . "\" 
+		xmlns:dat=\"http://www.stormware.cz/schema/version_2/data.xsd\" 
+		xmlns:typ=\"". self::$NS_TYPE ."\"
+		xmlns:inv=\"". Invoice::$NS_INVOICE . "\">
+		</dat:dataPack>";
 		$xml = simplexml_load_string($xmlText);
 
 		$i = 0;
