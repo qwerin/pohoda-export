@@ -68,18 +68,19 @@ $invoice->setProviderIdentity([
     "number" => "80/3",
     "zip" => "160 00",
     "ico" => "034234",
-    "dic" => "CZ034234"]);
+    "dic" => "CZ034234"
+    ]);
     
 // nastaveni identity prijemce
 $customer = [
-                "company" => "Firma s.r.o.",
-                "city" => "Praha",
-                "street" => "Nejaka ulice",
-                "number" => "80/3",
-                "zip" => "160 00",
-                "ico" => "034234",
-                "dic" => "CZ034234",
-                ];
+	"company" => "Firma s.r.o.",
+	"city" => "Praha",
+	"street" => "Nejaka ulice",
+	"number" => "80/3",
+	"zip" => "160 00",
+	"ico" => "034234",
+	"dic" => "CZ034234",
+];
 $customerAddress = 
 	new Pohoda\Export\Address(
     	new Pohoda\Object\Identity(
