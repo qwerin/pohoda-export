@@ -176,7 +176,8 @@ class Invoice
 		$this->dateDue = $this->convertDate($value);
 	}
 
-	public function setDateOrder($value) {
+	public function setDateOrder($value)
+	{
 		$this->validateItem('date order', $value, false, false, true);
 		$this->dateOrder = $this->convertDate($value);
 	}
@@ -358,7 +359,8 @@ class Invoice
 	 * Get shop identity
 	 * @return array
 	 */
-	public function getProviderIdentity() {
+	public function getProviderIdentity()
+	{
 		return $this->myIdentity;
 	}
 
@@ -366,7 +368,8 @@ class Invoice
 	/**
 	 * @param Address $address
 	 */
-	public function setCustomerAddress(Address $address) {
+	public function setCustomerAddress(Address $address)
+	{
 		$this->customerAddress = $address;
 	}
 
@@ -421,7 +424,7 @@ class Invoice
 
 		$paymentType = $header->addChild("inv:paymentType");
 		$paymentType->addChild('typ:paymentType', $this->paymentType, Export::$NS_TYPE);
-		if(!is_null($this->paymentTypeSting)) {
+		if (!is_null($this->paymentTypeSting)) {
 			$paymentType->addChild('typ:ids', $this->paymentTypeSting, Export::$NS_TYPE);
 		}
 
@@ -452,11 +455,11 @@ class Invoice
 		$partnerIdentity = $header->addChild("inv:partnerIdentity");
 		$this->customerAddress->exportAddress($partnerIdentity);
 
-		if(isset($this->numberOrder)) {
+		if (isset($this->numberOrder)) {
 			$header->addChild("inv:numberOrder", $this->numberOrder);
 		}
 
-		if(isset($this->dateOrder)) {
+		if (isset($this->dateOrder)) {
 			$header->addChild("inv:dateOrder", $this->dateOrder);
 		}
 	}
@@ -480,9 +483,9 @@ class Invoice
 				$hc = $item->addChild("inv:homeCurrency");
 				if ($product->getUnitPrice())
 					$hc->addChild("typ:unitPrice", $product->getUnitPrice(), Export::$NS_TYPE);
-				if($product->getPrice())
+				if ($product->getPrice())
 					$hc->addChild("typ:price", $product->getPrice(), Export::$NS_TYPE);
-				if($product->getPriceVAT())
+				if ($product->getPriceVAT())
 					$hc->addChild("typ:priceVAT", $product->getPriceVAT(), Export::$NS_TYPE);
 			}
 
@@ -503,7 +506,7 @@ class Invoice
 	private function exportAddress(SimpleXMLElement $xml, Array $data, $type = "address")
 	{
 
-		$address = $xml->addChild('typ:'.$type, null, Export::$NS_TYPE);
+		$address = $xml->addChild('typ:' . $type, null, Export::$NS_TYPE);
 
 		if (isset($data['company'])) {
 			$address->addChild('typ:company', $data['company']);
@@ -530,7 +533,7 @@ class Invoice
 		}
 
 		if (isset($data['country'])) {
-			$address->addChild('typ:country')->addChild('typ:ids',  $data['country']);
+			$address->addChild('typ:country')->addChild('typ:ids', $data['country']);
 		}
 
 		if (isset($data['zip'])) {
@@ -562,19 +565,19 @@ class Invoice
 		$summary->addChild('inv:roundingVAT', $this->roundingVAT);
 
 		$hc = $summary->addChild("inv:homeCurrency");
-		if(is_null($this->priceNone) === false)
+		if (is_null($this->priceNone) === false)
 			$hc->addChild('typ:priceNone', $this->priceNone, Export::$NS_TYPE); //cena v nulove sazbe dph
-		if(is_null($this->priceLow) === false)
+		if (is_null($this->priceLow) === false)
 			$hc->addChild('typ:priceLow', $this->priceLow, Export::$NS_TYPE); //cena bez dph ve snizene sazbe (15)
-		if(is_null($this->priceLowVAT) === false)
+		if (is_null($this->priceLowVAT) === false)
 			$hc->addChild('typ:priceLowVAT', $this->priceLowVAT, Export::$NS_TYPE); //dph ve snizene sazbe
-		if(is_null($this->priceLowSum) === false)
+		if (is_null($this->priceLowSum) === false)
 			$hc->addChild('typ:priceLowSum', $this->priceLowSum, Export::$NS_TYPE); //s dph ve snizene sazbe
-		if(is_null($this->priceHigh) === false)
+		if (is_null($this->priceHigh) === false)
 			$hc->addChild('typ:priceHigh', $this->priceHigh, Export::$NS_TYPE); //cena bez dph ve zvysene sazbe (21)
-		if(is_null($this->priceHightVAT) === false)
+		if (is_null($this->priceHightVAT) === false)
 			$hc->addChild('typ:priceHighVAT', $this->priceHightVAT, Export::$NS_TYPE);
-		if(is_null($this->priceHighSum) === false)
+		if (is_null($this->priceHighSum) === false)
 			$hc->addChild('typ:priceHighSum', $this->priceHighSum, Export::$NS_TYPE);
 
 		$round = $hc->addChild('typ:round', null, Export::$NS_TYPE);
