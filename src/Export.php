@@ -6,7 +6,7 @@ use Pohoda\Export\Address;
 
 class Export
 {
-
+	const NS_FTR = 'http://www.stormware.cz/schema/version_2/filter.xsd';
 	public static $NS_TYPE = 'http://www.stormware.cz/schema/version_2/type.xsd';
 
 	public $ico = '';
@@ -97,6 +97,7 @@ class Export
 		application=\"" . $application . "\" version = \"2.0\" note=\"" . $note . "\" 
 		xmlns:dat=\"http://www.stormware.cz/schema/version_2/data.xsd\" 
 		xmlns:typ=\"". self::$NS_TYPE ."\"
+		xmlns:ftr=\"" .  self::NS_FTR . "\"
 		xmlns:inv=\"". Invoice::NS . "\"
 		xmlns:adb=\"" . Address::NS . "\">
 		</dat:dataPack>";

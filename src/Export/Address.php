@@ -34,10 +34,27 @@ class Address implements IExport
 		$xmlAd = $xml->addChild('adb:addressbook', null, self::NS);
 		$xmlAd->addAttribute('version', '2.0');
 
+		if($this->getIdentity()->hasId()) {
+			$this->exportFilter($xmlAd->addChild('adb:actionType'), null, self::NS);
+		}
 		$this->exportHeader($xmlAd->addChild('adb:addressbookHeader', null, self::NS));
 
 		return $xmlAd;
 	}
+
+	/**
+	 * Filtr pro import osoby do adresare pohody, pokud uz tam je, tak nic neimportuje
+	 * @param SimpleXMLElement $xml
+	 */
+	public function exportFilter(SimpleXMLElement $xml)
+	{
+		$filter = $xml->addChild('adb:add', null, self::NS)
+			->addChild('ftr:filter', null, Export::NS_FTR);
+		$ext = $filter->addChild('ftr:extId', null, Export::NS_FTR);
+		$ext->addChild('typ:ids', $this->getIdentity()->getId(), Export::$NS_TYPE);
+		$ext->addChild('tpy:exSystemName', 'Unio', Export::$NS_TYPE);
+	}
+
 
 	public function exportHeader(SimpleXMLElement $header)
 	{
