@@ -392,7 +392,7 @@ class Invoice
 
 		$header->addChild("inv:invoiceType", $this->type);
 		$num = $header->addChild("inv:number");
-		$num->addChild('typ:numberRequested', $this->getId(), Export::$NS_TYPE);
+		$num->addChild('typ:numberRequested', $this->getId(), Export::NS_TYPE);
 
 		$header->addChild("inv:symVar", $this->varNum);
 
@@ -408,28 +408,28 @@ class Invoice
 		$classification = $header->addChild("inv:classificationVAT");
 		if ($this->withVAT) {
 			//tuzemske plneni
-			$classification->addChild('typ:classificationVATType', 'inland', Export::$NS_TYPE);
+			$classification->addChild('typ:classificationVATType', 'inland', Export::NS_TYPE);
 		} else {
 			//nezahrnovat do dph
-			$classification->addChild('typ:ids', 'UN', Export::$NS_TYPE);
-			$classification->addChild('typ:classificationVATType', 'nonSubsume', Export::$NS_TYPE);
+			$classification->addChild('typ:ids', 'UN', Export::NS_TYPE);
+			$classification->addChild('typ:classificationVATType', 'nonSubsume', Export::NS_TYPE);
 		}
 
 		if (!is_null($this->accounting)) {
 			$accounting = $header->addChild("inv:accounting");
-			$accounting->addChild('typ:ids', $this->accounting, Export::$NS_TYPE);
+			$accounting->addChild('typ:ids', $this->accounting, Export::NS_TYPE);
 		}
 
 		$header->addChild("inv:text", $this->text);
 
 		$paymentType = $header->addChild("inv:paymentType");
-		$paymentType->addChild('typ:paymentType', $this->paymentType, Export::$NS_TYPE);
+		$paymentType->addChild('typ:paymentType', $this->paymentType, Export::NS_TYPE);
 		if (!is_null($this->paymentTypeSting)) {
-			$paymentType->addChild('typ:ids', $this->paymentTypeSting, Export::$NS_TYPE);
+			$paymentType->addChild('typ:ids', $this->paymentTypeSting, Export::NS_TYPE);
 		}
 
 		$account = $header->addChild("inv:account");
-		$account->addChild('typ:ids', $this->bankShortcut, Export::$NS_TYPE);
+		$account->addChild('typ:ids', $this->bankShortcut, Export::NS_TYPE);
 
 		if (isset($this->note)) {
 			$header->addChild("inv:note", $this->note);
@@ -439,14 +439,14 @@ class Invoice
 
 		if (isset($this->contract)) {
 			$contract = $header->addChild("inv:contract");
-			$contract->addChild('typ:ids', $this->contract, Export::$NS_TYPE);
+			$contract->addChild('typ:ids', $this->contract, Export::NS_TYPE);
 		}
 
 		$header->addChild("inv:symConst", $this->symbolicNumber);
 
 		/** Pouze pri exportu z pohody.
 		 * $liq = $header->addChild("inv:liquidation");
-		 * $liq->addChild('typ:amountHome', $this->priceTotal, Export::$NS_TYPE);
+		 * $liq->addChild('typ:amountHome', $this->priceTotal, Export::NS_TYPE);
 		 */
 
 		$myIdentity = $header->addChild("inv:myIdentity");
@@ -482,11 +482,11 @@ class Invoice
 			if (!empty($product->getHomeCurrency())) {
 				$hc = $item->addChild("inv:homeCurrency");
 				if ($product->getUnitPrice())
-					$hc->addChild("typ:unitPrice", $product->getUnitPrice(), Export::$NS_TYPE);
+					$hc->addChild("typ:unitPrice", $product->getUnitPrice(), Export::NS_TYPE);
 				if ($product->getPrice())
-					$hc->addChild("typ:price", $product->getPrice(), Export::$NS_TYPE);
+					$hc->addChild("typ:price", $product->getPrice(), Export::NS_TYPE);
 				if ($product->getPriceVAT())
-					$hc->addChild("typ:priceVAT", $product->getPriceVAT(), Export::$NS_TYPE);
+					$hc->addChild("typ:priceVAT", $product->getPriceVAT(), Export::NS_TYPE);
 			}
 
 			$item->addChild("inv:note", $product->getNote());
@@ -497,8 +497,8 @@ class Invoice
 			//info o skladove polozce
 			if ($product->getStockItem()) {
 				$stock = $item->addChild("inv:stockItem");
-				$stockItem = $stock->addChild("typ:stockItem", null, Export::$NS_TYPE);
-				$stockItem->addChild("typ:ids", $product->getStockItem(), Export::$NS_TYPE);
+				$stockItem = $stock->addChild("typ:stockItem", null, Export::NS_TYPE);
+				$stockItem->addChild("typ:ids", $product->getStockItem(), Export::NS_TYPE);
 			}
 		}
 	}
@@ -506,7 +506,7 @@ class Invoice
 	private function exportAddress(SimpleXMLElement $xml, Array $data, $type = "address")
 	{
 
-		$address = $xml->addChild('typ:' . $type, null, Export::$NS_TYPE);
+		$address = $xml->addChild('typ:' . $type, null, Export::NS_TYPE);
 
 		if (isset($data['company'])) {
 			$address->addChild('typ:company', $data['company']);
@@ -566,22 +566,22 @@ class Invoice
 
 		$hc = $summary->addChild("inv:homeCurrency");
 		if (is_null($this->priceNone) === false)
-			$hc->addChild('typ:priceNone', $this->priceNone, Export::$NS_TYPE); //cena v nulove sazbe dph
+			$hc->addChild('typ:priceNone', $this->priceNone, Export::NS_TYPE); //cena v nulove sazbe dph
 		if (is_null($this->priceLow) === false)
-			$hc->addChild('typ:priceLow', $this->priceLow, Export::$NS_TYPE); //cena bez dph ve snizene sazbe (15)
+			$hc->addChild('typ:priceLow', $this->priceLow, Export::NS_TYPE); //cena bez dph ve snizene sazbe (15)
 		if (is_null($this->priceLowVAT) === false)
-			$hc->addChild('typ:priceLowVAT', $this->priceLowVAT, Export::$NS_TYPE); //dph ve snizene sazbe
+			$hc->addChild('typ:priceLowVAT', $this->priceLowVAT, Export::NS_TYPE); //dph ve snizene sazbe
 		if (is_null($this->priceLowSum) === false)
-			$hc->addChild('typ:priceLowSum', $this->priceLowSum, Export::$NS_TYPE); //s dph ve snizene sazbe
+			$hc->addChild('typ:priceLowSum', $this->priceLowSum, Export::NS_TYPE); //s dph ve snizene sazbe
 		if (is_null($this->priceHigh) === false)
-			$hc->addChild('typ:priceHigh', $this->priceHigh, Export::$NS_TYPE); //cena bez dph ve zvysene sazbe (21)
+			$hc->addChild('typ:priceHigh', $this->priceHigh, Export::NS_TYPE); //cena bez dph ve zvysene sazbe (21)
 		if (is_null($this->priceHightVAT) === false)
-			$hc->addChild('typ:priceHighVAT', $this->priceHightVAT, Export::$NS_TYPE);
+			$hc->addChild('typ:priceHighVAT', $this->priceHightVAT, Export::NS_TYPE);
 		if (is_null($this->priceHighSum) === false)
-			$hc->addChild('typ:priceHighSum', $this->priceHighSum, Export::$NS_TYPE);
+			$hc->addChild('typ:priceHighSum', $this->priceHighSum, Export::NS_TYPE);
 
-		$round = $hc->addChild('typ:round', null, Export::$NS_TYPE);
-		$round->addChild('typ:priceRound', 0, Export::$NS_TYPE); //Celková suma zaokrouhleni
+		$round = $hc->addChild('typ:round', null, Export::NS_TYPE);
+		$round->addChild('typ:priceRound', 0, Export::NS_TYPE); //Celková suma zaokrouhleni
 
 	}
 }

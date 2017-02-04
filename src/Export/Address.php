@@ -51,8 +51,8 @@ class Address implements IExport
 		$filter = $xml->addChild('adb:add', null, self::NS)
 			->addChild('ftr:filter', null, Export::NS_FTR);
 		$ext = $filter->addChild('ftr:extId', null, Export::NS_FTR);
-		$ext->addChild('typ:ids', $this->getIdentity()->getId(), Export::$NS_TYPE);
-		$ext->addChild('tpy:exSystemName', 'Unio', Export::$NS_TYPE);
+		$ext->addChild('typ:ids', $this->getIdentity()->getId(), Export::NS_TYPE);
+		$ext->addChild('tpy:exSystemName', 'Unio', Export::NS_TYPE);
 	}
 
 
@@ -72,9 +72,9 @@ class Address implements IExport
 		$identity = $this->getIdentity();
 
 		if ($identity->hasId()) {
-			$ext = $xml->addChild('typ:extId', null, Export::$NS_TYPE);
-			$ext->addChild('typ:ids', $identity->getId(), Export::$NS_TYPE);
-			$ext->addChild('tpy:exSystemName', 'Unio', Export::$NS_TYPE);
+			$ext = $xml->addChild('typ:extId', null, Export::NS_TYPE);
+			$ext->addChild('typ:ids', $identity->getId(), Export::NS_TYPE);
+			$ext->addChild('tpy:exSystemName', 'Unio', Export::NS_TYPE);
 		}
 
 		$this->exportAddressXml($xml, $identity->getAddress());
@@ -87,7 +87,7 @@ class Address implements IExport
 	public function exportAddressXml(SimpleXMLElement $xml, \Pohoda\Object\Address $address, $type = self::ADDRESS)
 	{
 
-		$xmlAd = $xml->addChild('typ:' . $type, null, Export::$NS_TYPE);
+		$xmlAd = $xml->addChild('typ:' . $type, null, Export::NS_TYPE);
 
 		if ($address->getCompany()) {
 			$xmlAd->addChild('typ:company', $address->getCompany());
