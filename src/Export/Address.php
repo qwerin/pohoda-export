@@ -67,7 +67,7 @@ class Address implements IExport
 	}
 
 
-	public function exportAddressXml(SimpleXMLElement $xml, \Pohoda\Object\Address $address, $type = "address")
+	public function exportAddressXml(SimpleXMLElement $xml, \Pohoda\Object\Address $address, $type = self::ADDRESS)
 	{
 
 		$xmlAd = $xml->addChild('typ:' . $type, null, Export::$NS_TYPE);
