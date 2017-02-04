@@ -337,6 +337,24 @@ class Invoice
 	}
 
 	/**
+	 * @param array $customerAddress
+	 * @param null $identity
+	 * @param array $shippingAddress
+	 */
+	public function createCustomerAddress(array $customerAddress, $identity = null, array $shippingAddress = [])
+	{
+		$address = new Address(
+			new \Pohoda\Object\Identity(
+				$identity, //identifikator zakaznika [pokud neni zadan, neprovede se import do adresare]
+				new \Pohoda\Object\Address($customerAddress), //adresa zakaznika
+				new \Pohoda\Object\Address($shippingAddress) //pripadne dodaci adresa
+			)
+		);
+
+		$this->setCustomerAddress($address);
+	}
+
+	/**
 	 * Get shop identity
 	 * @return array
 	 */

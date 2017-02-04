@@ -1,9 +1,9 @@
-pohoda-export-faktur
-====================
+pohoda-export
+=============
 
 Export invoices to XML format used in accounting software POHODA
 
-Třídy umožní importovat/exportovat faktury do stormware POHODA účetnictnictví. Není to kompletní převod, nezahrnuje to všehny parametry, ale umožňuje to generovat XML, základní validaci a hlásí to chyby. 
+Třídy umožní importovat faktury a adresy do Stormware POHODA účetnictnictví. Není to kompletní převod, nezahrnuje to všehny parametry, ale umožňuje to generovat XML, základní validaci a hlásí to chyby. 
 Je to něco co vzniklo jako utilitka v SECTION Technologies s.r.o. Další rozšíření a úpravy Mgr. Ivo Toman www.aivo.cz
 
 ## Quick Start
@@ -84,12 +84,15 @@ $customer = [
 $customerAddress = 
 	new Pohoda\Export\Address(
     	new Pohoda\Object\Identity(
-        	z125, //identifikator zakaznika [pokud neni zadan, neprovede se import do adresare]
+        	"z125", //identifikator zakaznika [pokud neni zadan, neprovede se import do adresare]
             new Pohoda\Object\Address($customer), //adresa zakaznika
             new Pohoda\Object\Address(["street" => "Pod Mostem"]) //pripadne dodaci adresa
         )
     );
 $invoice->setCustomerAddress($customerAddress);
+
+// nebo jednoduseji
+$invoice->createCustomerAddress($customer, "z125", ["street" => "Pod Mostem"]);
 ```
 
 ## Validace
