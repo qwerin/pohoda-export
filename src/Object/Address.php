@@ -34,7 +34,7 @@ class Address extends Object
 			$this->street = $this->validateItem('street', $value['street'], 64);
 		}
 		if (isset($value['zip'])) {
-			$value['zip'] = $value['zip'];
+			$value['zip'] = $this->removeSpaces($value['zip']);
 			$this->zip = $this->validateItem('zip', $value['zip'], 15, true);
 		}
 		if (isset($value['city'])) {
