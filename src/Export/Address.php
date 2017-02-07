@@ -33,10 +33,7 @@ class Address implements IExport
 	{
 		$xmlAd = $xml->addChild('adb:addressbook', null, self::NS);
 		$xmlAd->addAttribute('version', '2.0');
-
-		if($this->getIdentity()->hasId()) {
-			$this->exportFilter($xmlAd->addChild('adb:actionType'), null, self::NS);
-		}
+		$this->exportFilter($xmlAd->addChild('adb:actionType'), null, self::NS);
 		$this->exportHeader($xmlAd->addChild('adb:addressbookHeader', null, self::NS));
 
 		return $xmlAd;
@@ -50,9 +47,17 @@ class Address implements IExport
 	{
 		$filter = $xml->addChild('adb:add', null, self::NS)
 			->addChild('ftr:filter', null, Export::NS_FTR);
-		$ext = $filter->addChild('ftr:extId', null, Export::NS_FTR);
-		$ext->addChild('typ:ids', $this->getIdentity()->getId(), Export::NS_TYPE);
-		$ext->addChild('tpy:exSystemName', 'Unio', Export::NS_TYPE);
+		if($this->getIdentity()->hasId()) {
+			$ext = $filter->addChild('ftr:extId', null, Export::NS_FTR);
+			$ext->addChild('typ:ids', $this->getIdentity()->getId(), Export::NS_TYPE);
+			$ext->addChild('tpy:exSystemName', 'Unio', Export::NS_TYPE);
+		} else {
+			$adr = $this->getIdentity()->getAddress();
+			$filter->addChild('ftr:company', $adr->getCompany(), Export::NS_FTR);
+			$filter->addChild('ftr:name', $adr->getName(), Export::NS_FTR);
+			$filter->addChild('ftr:street', $adr->getStreet(), Export::NS_FTR);
+			$filter->addChild('ftr:city', $adr->getCity(), Export::NS_FTR);
+		}
 	}
 
 

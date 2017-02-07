@@ -79,7 +79,7 @@ try {
 	$customerAddress = 
 		new Pohoda\Export\Address(
 	        new Pohoda\Object\Identity(
-	            "z125", //identifikator zakaznika [pokud neni zadan, neprovede se import do adresare]
+	            "z125", //identifikator zakaznika [pokud neni zadan, nebude propojen s adresarem]
 	            new Pohoda\Object\Address($customer), //adresa zakaznika
 	            new Pohoda\Object\Address(["street" => "Pod Mostem"]) //pripadne dodaci adresa
 	        )
@@ -103,6 +103,7 @@ try {
 if ($invoice->isValid()) {
     // pokud je faktura validni, pridame ji do exportu
     $pohoda->addInvoice($invoice);
+    //pokud se ma importovat do adresare
     $pohoda->addAddress($customerAddress);
 }
 else {

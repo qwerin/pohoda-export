@@ -50,8 +50,7 @@ class Export
 
 	public function addAddress(Address $address)
 	{
-		if($address->getIdentity()->hasId()) //only if has ID
-			$this->address[] = $address;
+		$this->address[] = $address;
 	}
 
 
