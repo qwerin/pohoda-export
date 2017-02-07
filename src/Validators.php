@@ -12,7 +12,7 @@ class Validators
 	public static function assertBoolean($value)
 	{
 		if (self::isBoolean($value) === false) {
-			throw new \InvalidArgumentException("Value: $value is not numeric");
+			throw new \InvalidArgumentException("value ($value) is not numeric");
 		}
 	}
 
@@ -26,7 +26,7 @@ class Validators
 	public static function assertDate($value)
 	{
 		if (self::isDate($value) === false) {
-			throw new \InvalidArgumentException("Value: $value is not a date");
+			throw new \InvalidArgumentException("value ($value) is not a date");
 		}
 	}
 
@@ -40,7 +40,7 @@ class Validators
 	public static function assertNumeric($value)
 	{
 		if (self::isNumeric($value) === false) {
-			throw new \InvalidArgumentException("Value: $value is not numeric");
+			throw new \InvalidArgumentException("value ($value) is not numeric");
 		}
 	}
 
@@ -54,7 +54,7 @@ class Validators
 	public static function assertMaxLength($value, $maxLength)
 	{
 		if (self::isMaxLength($value, $maxLength) === false) {
-			throw new \InvalidArgumentException("Value: $value is length than $maxLength");
+			throw new \InvalidArgumentException("value ($value) is length than $maxLength");
 		}
 	}
 
@@ -68,7 +68,7 @@ class Validators
 	public static function assertKeyInList($value, array $list)
 	{
 		if (self::isKeyInList($value, $list) === false) {
-			throw new \InvalidArgumentException("Value: $value is not in " . explode(",", array_keys($list)));
+			throw new \InvalidArgumentException("value ($value) is not in " . explode(",", array_keys($list)));
 		}
 	}
 

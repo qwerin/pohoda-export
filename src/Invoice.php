@@ -6,6 +6,7 @@ use Pohoda\Export\Address;
 use SimpleXMLElement;
 use DateTime;
 
+
 class Invoice
 {
 	const NS = 'http://www.stormware.cz/schema/version_2/invoice.xsd';
@@ -54,8 +55,6 @@ class Invoice
 	private $customerAddress;
 
 	private $id;
-	private $errors = [];
-	private $reqErrors = [];
 	private $required = ['date', 'varNum', 'text'];
 
 	public function __construct($id)
@@ -63,10 +62,14 @@ class Invoice
 		$this->id = $id;
 	}
 
+	/**
+	 * @param $bool
+	 * @throws InvoiceException
+	 */
 	public function setWithVat($bool)
 	{
 		if (is_bool($bool) === false)
-			throw new \InvalidArgumentException("setWithVat must use boolead value");
+			throw new InvoiceException($this->getId() . ": setWithVat must use boolean value");
 		$this->withVAT = $bool;
 	}
 
@@ -77,24 +80,33 @@ class Invoice
 
 	public function isValid()
 	{
-		return $this->checkRequired() && empty($this->errors);
+		return $this->checkRequired();
 	}
 
+	/**
+	 * @throws InvoiceException
+	 * @return bool
+	 */
 	private function checkRequired()
 	{
-		$result = true;
-		$this->reqErrors = [];
-
 		foreach ($this->required as $param) {
 			if (!isset($this->$param)) {
 				$result = false;
-				$this->reqErrors[] = 'Není nastaven povinný prvek ' . $param;
+				throw new InvoiceException($this->getId() . ": required " . $param . " is not set");
 			}
 		}
-
-		return $result;
+		return true;
 	}
 
+
+	/**
+	 * @throws InvoiceException
+	 * @param string $name
+	 * @param string $value
+	 * @param bool $maxLength
+	 * @param bool $isNumeric
+	 * @param bool $isDate
+	 */
 	private function validateItem($name, $value, $maxLength = false, $isNumeric = false, $isDate = false)
 	{
 		try {
@@ -106,7 +118,7 @@ class Invoice
 				Validators::assertDate($value);
 
 		} catch (\InvalidArgumentException $e) {
-			$this->errors[] = $name . " " . $e->getMessage();
+			throw new InvoiceException($this->getId() . ": " . $name . " - " . $e->getMessage(), 0, $e);
 		}
 	}
 
@@ -121,18 +133,6 @@ class Invoice
 			return $date->format("Y-m-d");
 
 		return $date;
-	}
-
-	public function getErrors()
-	{
-		$arr = array_merge($this->errors, $this->reqErrors);
-
-		$fce = function ($row) {
-			return $this->id . ':' . $row;
-		};
-		$arr = array_map($fce, $arr);
-
-		return $arr;
 	}
 
 	public function addItem(InvoiceItem $item)
@@ -194,6 +194,10 @@ class Invoice
 		$this->bankShortcut = $value;
 	}
 
+	/**
+	 * @param string $value
+	 * @throws InvoiceException
+	 */
 	public function setPaymentType($value)
 	{
 		$payments = [
@@ -209,7 +213,7 @@ class Invoice
 		];
 
 		if (is_null($value) || !isset($payments[$value])) {
-			$this->errors[] = "Payment type $value is not supported. Use one of these: " . explode(",", array_keys($payments));
+			throw new InvoiceException($this->getId() . ": payment type $value is not supported. Use one of these: " . explode(",", array_keys($payments)));
 		}
 
 	}
@@ -338,21 +342,29 @@ class Invoice
 	}
 
 	/**
+	 * @throws InvoiceException
 	 * @param array $customerAddress
 	 * @param null $identity
 	 * @param array $shippingAddress
 	 */
 	public function createCustomerAddress(array $customerAddress, $identity = null, array $shippingAddress = [])
 	{
-		$address = new Address(
-			new \Pohoda\Object\Identity(
-				$identity, //identifikator zakaznika [pokud neni zadan, neprovede se import do adresare]
-				new \Pohoda\Object\Address($customerAddress), //adresa zakaznika
-				new \Pohoda\Object\Address($shippingAddress) //pripadne dodaci adresa
-			)
-		);
+		try {
+			$address = new Address(
+				new \Pohoda\Object\Identity(
+					$identity, //identifikator zakaznika [pokud neni zadan, neprovede se import do adresare]
+					new \Pohoda\Object\Address($customerAddress), //adresa zakaznika
+					new \Pohoda\Object\Address($shippingAddress) //pripadne dodaci adresa
+				)
+			);
 
-		$this->setCustomerAddress($address);
+			$this->setCustomerAddress($address);
+
+			return $address;
+
+		} catch (\InvalidArgumentException $e) {
+			throw new InvoiceException($this->getId() . ": " . $e->getMessage(), 0, $e);
+		}
 	}
 
 	/**
@@ -585,4 +597,6 @@ class Invoice
 
 	}
 }
+
+class InvoiceException extends \Exception {};
 
