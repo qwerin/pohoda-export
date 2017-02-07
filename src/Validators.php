@@ -54,7 +54,7 @@ class Validators
 	public static function assertMaxLength($value, $maxLength)
 	{
 		if (self::isMaxLength($value, $maxLength) === false) {
-			throw new \InvalidArgumentException("value ($value) is length than $maxLength");
+			throw new \InvalidArgumentException("value ($value) is longer than $maxLength");
 		}
 	}
 
