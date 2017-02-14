@@ -42,6 +42,8 @@ class Invoice
 
 	private $numberOrder; //vlastni cislo objednavky
 
+	private $centre; //stredisko
+	private $activity; //cinnost
 	/** Zakazka
 	 * @var string
 	 */
@@ -243,9 +245,24 @@ class Invoice
 
 	public function setContract($value)
 	{
-		$this->validateItem('contract', $value, 10);
+		$this->validateItem('contract', $value, 19);
 		$this->contract = $value;
 	}
+
+
+	public function setCentre($centre)
+	{
+		$this->validateItem('centre', $value, 19);
+		$this->centre = $centre;
+	}
+
+
+	public function setActivity($activity)
+	{
+		$this->validateItem('activity', $value, 19);
+		$this->activity = $activity;
+	}
+
 
 	public function setSymbolicNumber($value)
 	{
@@ -452,6 +469,16 @@ class Invoice
 		if (isset($this->contract)) {
 			$contract = $header->addChild("inv:contract");
 			$contract->addChild('typ:ids', $this->contract, Export::NS_TYPE);
+		}
+
+		if(isset($this->centre)) {
+			$centre = $header->addChild("inv:centre");
+			$centre->addChild('typ:ids', $this->centre, Export::NS_TYPE);
+		}
+
+		if(isset($this->activity)) {
+			$activity = $header->addChild("inv:activity");
+			$activity->addChild('typ:ids', $this->activity, Export::NS_TYPE);
 		}
 
 		$header->addChild("inv:symConst", $this->symbolicNumber);

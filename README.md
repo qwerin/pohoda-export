@@ -23,6 +23,9 @@ try {
 	$invoice->setPriceWithoutVAT($price);
 	$invoice->setPriceOnlyVAT($price*0.21);
 	$invoice->withVAT(true);
+	$invoice->setActivity('eshop'); //cinnost v pohode [volitelne, typ:ids]
+	$invoice->setCentre('stredisko'); //stredisko v pohode [volitelne, typ:ids]
+	$invoice->setContract('zak1'); //zakazka v pohode [volitelne, typ:ids]
 	
 	//nebo pridanim polozek do faktury (nove)
 	$invoice->setText('Faktura za zboží');
