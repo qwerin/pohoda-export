@@ -228,8 +228,8 @@ class Invoice
 
 	public function setPaymentTypeString($value)
 	{
-		$this->validateItem('payment type czech', $value, 20);
-		$this->paymentTypeSting = $value;
+		$this->validateItem('payment type string', $value, 20);
+		$this->paymentTypeString = $value;
 	}
 
 	public function setAccounting($value)
@@ -453,8 +453,8 @@ class Invoice
 
 		$paymentType = $header->addChild("inv:paymentType");
 		$paymentType->addChild('typ:paymentType', $this->paymentType, Export::NS_TYPE);
-		if (!is_null($this->paymentTypeSting)) {
-			$paymentType->addChild('typ:ids', $this->paymentTypeSting, Export::NS_TYPE);
+		if (!is_null($this->paymentTypeString)) {
+			$paymentType->addChild('typ:ids', $this->paymentTypeString, Export::NS_TYPE);
 		}
 
 		$account = $header->addChild("inv:account");
