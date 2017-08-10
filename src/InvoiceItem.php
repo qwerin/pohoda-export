@@ -71,7 +71,7 @@ class InvoiceItem
 	 */
 	public function setQuantity($quantity)
 	{
-		Validators::isNumeric($quantity);
+		Validators::assertNumeric($quantity);
 		$this->quantity = $quantity;
 	}
 
@@ -103,7 +103,7 @@ class InvoiceItem
 	 */
 	public function setCoefficient($coefficient)
 	{
-		Validators::isNumeric($coefficient);
+		Validators::assertNumeric($coefficient);
 		$this->coefficient = $coefficient;
 	}
 
@@ -120,7 +120,7 @@ class InvoiceItem
 	 */
 	public function setPayVAT($payVAT)
 	{
-		Validators::isBoolean($payVAT);
+		Validators::assertBoolean($payVAT);
 		$this->payVAT = $payVAT;
 	}
 
@@ -177,7 +177,7 @@ class InvoiceItem
 	 */
 	public function setPercentVAT($percentVAT)
 	{
-		Validators::isNumeric($percentVAT);
+		Validators::assertNumeric($percentVAT);
 		$this->percentVAT = $percentVAT;
 	}
 
@@ -194,7 +194,7 @@ class InvoiceItem
 	 */
 	public function setDiscountPercentage($discountPercentage)
 	{
-		Validators::isNumeric($discountPercentage);
+		Validators::assertNumeric($discountPercentage);
 		if ($discountPercentage < -999 || $discountPercentage > 999)
 			throw new \InvalidArgumentException($discountPercentage . " must be betweeen -999 and 999");
 		$this->discountPercentage = $discountPercentage;
@@ -218,7 +218,7 @@ class InvoiceItem
 	 */
 	public function setUnitPrice($price)
 	{
-		Validators::isNumeric($price);
+		Validators::assertNumeric($price);
 		$this->homeCurrency["unitPrice"] = $price;
 	}
 
@@ -233,7 +233,7 @@ class InvoiceItem
 	public function setPrice($price)
 	{
 		//without tax (vat)
-		Validators::isNumeric($price);
+		Validators::assertNumeric($price);
 		$this->homeCurrency["price"] = $price;
 	}
 
@@ -248,7 +248,7 @@ class InvoiceItem
 	public function setPriceVAT($price)
 	{
 		//only vat itself
-		Validators::isNumeric($price);
+		Validators::assertNumeric($price);
 		$this->homeCurrency["priceVAT"] = $price;
 	}
 
@@ -263,7 +263,7 @@ class InvoiceItem
 	{
 		//price with vat
 		trigger_error("PriceSUM is only for export from POHODA");
-		Validators::isNumeric($price);
+		Validators::assertNumeric($price);
 		$this->homeCurrency["priceSum"] = $price;
 	}
 
