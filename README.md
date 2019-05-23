@@ -87,6 +87,7 @@ try {
 		"zip" => "160 00",
 		"ico" => "034234",
 		"dic" => "CZ034234",
+		"country" => "CZ", //volitelne, z ciselniku pohody
 	];
 	$customerAddress = 
 		new Pohoda\Export\Address(

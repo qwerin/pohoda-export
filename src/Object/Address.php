@@ -60,6 +60,10 @@ class Address
 			$this->dic = $this->validateItem('dic', $value['dic'], 18);
 		}
 
+		if (isset($value['country'])) {
+			$this->country = $value['country'];
+		}
+
 	}
 
 	private function removeSpaces($value)
