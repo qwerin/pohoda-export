@@ -134,6 +134,10 @@ class Address implements IExport
 			$xmlAd->addChild('typ:dic', $address->getDic());
 		}
 
+		if ($address->getIcDph()) {
+			$xmlAd->addChild('typ:icDph', $address->getIcDph());
+		}
+
 		if ($address->getPhone()) {
 			$xmlAd->addChild('typ:mobilPhone', $address->getPhone());
 		}

@@ -87,6 +87,7 @@ try {
 		"zip" => "160 00",
 		"ico" => "034234",
 		"dic" => "CZ034234",
+		"icDph" => "SK....", //volitelne, v pripade slovenskeho platce dph
 		"country" => "CZ", //volitelne, z ciselniku pohody
 	];
 	$customerAddress = 

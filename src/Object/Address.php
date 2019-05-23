@@ -20,6 +20,7 @@ class Address
 	private $country;
 	private $ico;
 	private $dic;
+	private $icDph;
 	private $phone;
 	private $email;
 
@@ -59,7 +60,10 @@ class Address
 			$value['dic'] = $this->removeSpaces($value['dic']);
 			$this->dic = $this->validateItem('dic', $value['dic'], 18);
 		}
-
+		if (isset($value['icDph'])) {
+			$value['icDph'] = $this->removeSpaces($value['icDph']);
+			$this->icDph = $this->validateItem('icDph', $value['icDph'], 18);
+		}
 		if (isset($value['country'])) {
 			$this->country = $value['country'];
 		}
@@ -157,6 +161,14 @@ class Address
 	public function getDic()
 	{
 		return $this->dic;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getIcDph()
+	{
+		return $this->icDph;
 	}
 
 	/**
