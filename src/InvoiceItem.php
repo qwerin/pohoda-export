@@ -276,12 +276,64 @@ class InvoiceItem
 		return $this->foreignCurrency;
 	}
 
-	/**
-	 * @param array $foreignCurrency
-	 */
-	public function setForeignCurrency(array $foreignCurrency)
+
+	public function getForeignUnitPrice()
 	{
-		$this->foreignCurrency = $foreignCurrency;
+		return $this->foreignCurrency["unitPrice"];
+	}
+
+	/**
+	 * @param float $price
+	 */
+	public function setForeignUnitPrice($price)
+	{
+		Validators::assertNumeric($price);
+		$this->foreignCurrency["unitPrice"] = $price;
+	}
+
+	public function getForeignPrice()
+	{
+		return $this->foreignCurrency["price"];
+	}
+
+	/**
+	 * @param float $price
+	 */
+	public function setForeignPrice($price)
+	{
+		//without tax (vat)
+		Validators::assertNumeric($price);
+		$this->foreignCurrency["price"] = $price;
+	}
+
+	public function getForeignPriceVAT()
+	{
+		return $this->foreignCurrency["priceVAT"];
+	}
+
+	/**
+	 * @param float $price
+	 */
+	public function setForeignPriceVAT($price)
+	{
+		//only vat itself
+		Validators::assertNumeric($price);
+		$this->foreignCurrency["priceVAT"] = $price;
+	}
+
+
+	public function getForeignPriceSum()
+	{
+		return $this->foreignCurrency["priceSum"];
+	}
+
+
+	public function setForeignPriceSum($price)
+	{
+		//price with vat
+		trigger_error("PriceSUM is only for export from POHODA");
+		Validators::assertNumeric($price);
+		$this->foreignCurrency["priceSum"] = $price;
 	}
 
 	/**

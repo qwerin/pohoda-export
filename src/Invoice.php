@@ -57,6 +57,17 @@ class Invoice
 	private $customerAddress;
 
 	private $id;
+
+	/** @var string - kod meny */
+	private $foreignCurrency;
+
+	/** @var float kurz meny - např. 25.5 pro euro */
+	private $rate;
+
+	/** @var int mnozstvi cizi meny pro kurzovy prepocet  */
+	private $amount = 1;
+
+
 	private $required = ['date', 'varNum', 'text'];
 
 	public function __construct($id)
@@ -335,6 +346,13 @@ class Invoice
 	}
 
 
+
+	public function setForeignCurrency(string $currency, float $rate)
+	{
+		$this->foreignCurrency = $currency;
+		$this->rate = $rate;
+	}
+
 	public function setProviderIdentity($value)
 	{
 		if (isset($value['company'])) {
@@ -518,7 +536,7 @@ class Invoice
 			if ($product->getDiscountPercentage())
 				$item->addChild("inv:discountPercentage", $product->getDiscountPercentage());
 
-			if (!empty($product->getHomeCurrency())) {
+			if ($this->foreignCurrency === null) {
 				$hc = $item->addChild("inv:homeCurrency");
 				if ($product->getUnitPrice())
 					$hc->addChild("typ:unitPrice", $product->getUnitPrice(), Export::NS_TYPE);
@@ -526,6 +544,14 @@ class Invoice
 					$hc->addChild("typ:price", $product->getPrice(), Export::NS_TYPE);
 				if ($product->getPriceVAT())
 					$hc->addChild("typ:priceVAT", $product->getPriceVAT(), Export::NS_TYPE);
+			} else {
+				$fc = $item->addChild('inv:foreignCurrency');
+				if ($product->getForeignUnitPrice())
+					$fc->addChild("typ:unitPrice", $product->getForeignUnitPrice(),Export::NS_TYPE);
+				if ($product->getForeignPrice())
+					$fc->addChild("typ:price", $product->getForeignPrice(), Export::NS_TYPE);
+				if ($product->getForeignPriceVAT())
+					$fc->addChild("typ:priceVAT", $product->getForeignPriceVAT(), Export::NS_TYPE);
 			}
 
 			$item->addChild("inv:note", $product->getNote());
@@ -619,8 +645,18 @@ class Invoice
 		if (is_null($this->priceHighSum) === false)
 			$hc->addChild('typ:priceHighSum', $this->priceHighSum, Export::NS_TYPE);
 
+		if($this->foreignCurrency !== null) {
+			$fc = $summary->addChild('inv:foreignCurrency');
+			$fc->addChild('typ:currency', null, Export::NS_TYPE)->addChild('typ:ids', $this->foreignCurrency, Export::NS_TYPE);
+			$fc->addChild('typ:rate', $this->rate,Export::NS_TYPE);
+			$fc->addChild('typ:amount', $this->amount, Export::NS_TYPE);
+		}
+
 		$round = $hc->addChild('typ:round', null, Export::NS_TYPE);
 		$round->addChild('typ:priceRound', 0, Export::NS_TYPE); //Celková suma zaokrouhleni
+
+
+
 
 	}
 }

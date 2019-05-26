@@ -110,6 +110,16 @@ try {
 }
 ```
 
+## Faktura v cizí měně
+
+```php
+....
+$invoice->setForeignCurrency('EUR', 25.826); //iso kod meny
+...
+$item->setForeignUnitPrice(11.43); //cena v cizi mene
+```
+
+
 ## Validace
 
 ```php
