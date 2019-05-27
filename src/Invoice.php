@@ -261,17 +261,17 @@ class Invoice
 	}
 
 
-	public function setCentre($centre)
+	public function setCentre($value)
 	{
 		$this->validateItem('centre', $value, 19);
-		$this->centre = $centre;
+		$this->centre = $value;
 	}
 
 
-	public function setActivity($activity)
+	public function setActivity($value)
 	{
 		$this->validateItem('activity', $value, 19);
-		$this->activity = $activity;
+		$this->activity = $value;
 	}
 
 
@@ -654,9 +654,6 @@ class Invoice
 
 		$round = $hc->addChild('typ:round', null, Export::NS_TYPE);
 		$round->addChild('typ:priceRound', 0, Export::NS_TYPE); //Celková suma zaokrouhleni
-
-
-
 
 	}
 }
