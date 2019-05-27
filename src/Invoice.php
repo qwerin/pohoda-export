@@ -11,6 +11,8 @@ class Invoice
 {
 	const NS = 'http://www.stormware.cz/schema/version_2/invoice.xsd';
 
+	private $cancel;
+
 	private $withVAT = false;
 
 	public $type = 'issuedInvoice'; //normalni faktura
@@ -420,18 +422,38 @@ class Invoice
 		$this->customerAddress = $address;
 	}
 
+	/** storno */
+	public function cancelDocument($id)
+	{
+		$this->cancel = $id;
+	}
+
 
 	public function export(SimpleXMLElement $xml)
 	{
 		$xmlInvoice = $xml->addChild("inv:invoice", null, self::NS);
 		$xmlInvoice->addAttribute('version', "2.0");
 
-
-		$this->exportHeader($xmlInvoice->addChild("inv:invoiceHeader", null, self::NS));
-		if (!empty($this->items)) {
-			$this->exportDetail($xmlInvoice->addChild("inv:invoiceDetail", null, self::NS));
+		if($this->cancel) {
+			$xmlInvoice
+				->addChild('cancelDocument')
+				->addChild('sourceDocument', null, Export::NS_TYPE)
+				->addChild('number',  $this->cancel, Export::NS_TYPE);
+			$this->exportCancelHeader($xmlInvoice->addChild("inv:invoiceHeader", null, self::NS));
+		} else {
+			$this->exportHeader($xmlInvoice->addChild("inv:invoiceHeader", null, self::NS));
+			if (!empty($this->items)) {
+				$this->exportDetail($xmlInvoice->addChild("inv:invoiceDetail", null, self::NS));
+			}
+			$this->exportSummary($xmlInvoice->addChild("inv:invoiceSummary", null, self::NS));
 		}
-		$this->exportSummary($xmlInvoice->addChild("inv:invoiceSummary", null, self::NS));
+
+	}
+
+	private function exportCancelHeader(SimpleXMLElement $header)
+	{
+		$header->addChild("invoiceType", $this->type);
+		$header->addChild("inv:text", $this->text);
 	}
 
 	private function exportHeader(SimpleXMLElement $header)

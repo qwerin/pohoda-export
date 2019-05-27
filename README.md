@@ -120,6 +120,15 @@ $item->setForeignUnitPrice(11.43); //cena v cizi mene
 ```
 
 
+## Storno faktury
+
+```php
+....
+$invoice = new Pohoda\Invoice('storno-324342');
+$invoice->cancelDocument('324342');
+$invoice->setText('Storno faktury');
+```
+
 ## Validace
 
 ```php
