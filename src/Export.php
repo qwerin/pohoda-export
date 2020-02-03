@@ -12,6 +12,7 @@ class Export
 	public $ico = '';
 
 	private $invoices = [];
+    private $orders = [];
 	private $address = [];
 
 	private $lastId = 0;
@@ -47,6 +48,10 @@ class Export
 	{
 		$this->invoices[] = $invoice;
 	}
+    public function addOrder(Order $order)
+    {
+        $this->orders[] = $order;
+    }
 
 	public function addAddress(Address $address)
 	{
@@ -129,6 +134,20 @@ class Export
 				$this->lastId = $item->getId();
 			}
 		}
+
+        /** @var Order $item */
+        foreach ($this->orders as $item) {
+            $i++;
+            $dataItem = $xml->addChild("dat:dataPackItem");
+            $dataItem->addAttribute('version', "2.0");
+            $dataItem->addAttribute('id', $item->getId());
+
+            $item->export($dataItem);
+
+            if ($item->getId() > $this->lastId) {
+                $this->lastId = $item->getId();
+            }
+        }
 
 		return $xml;
 	}
