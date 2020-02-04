@@ -42,6 +42,9 @@ class OrderItem
 
     private $stockItem; //odkaz na skladovou zasobu
 
+    private $storeId; //id skladu
+    private $storeIds; //nazev skladu
+
 
     /**
      * @return string $text
@@ -439,6 +442,38 @@ class OrderItem
     public function setStockItem($stockItem)
     {
         $this->stockItem = $stockItem;
+    }
+
+    /**
+     * @param mixed $stockItem
+     */
+    public function setStoreId($storeId)
+    {
+        $this->storeId = $storeId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStoreId()
+    {
+        return $this->storeId;
+    }
+
+    /**
+     * @param mixed $stockItem
+     */
+    public function setStoreIds($storeIds)
+    {
+        $this->storeIds = $storeIds;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStoreIds()
+    {
+        return $this->storeIds;
     }
 
 

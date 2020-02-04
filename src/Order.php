@@ -613,6 +613,15 @@ class Order
                 $stock = $item->addChild("ord:stockItem");
                 $stockItem = $stock->addChild("typ:stockItem", null, Export::NS_TYPE);
                 $stockItem->addChild("typ:ids", $product->getStockItem(), Export::NS_TYPE);
+                if($product->getStoreId()||$product->getStoreIds()){
+                    $store = $stock->addChild("typ:store", null, Export::NS_TYPE);
+                    if($product->getStoreId()) {
+                        $store->addChild("typ:id", $product->getStoreId(), Export::NS_TYPE);
+                    }
+                    if($product->getStoreIds()) {
+                        $store->addChild("typ:ids", $product->getStoreIds(), Export::NS_TYPE);
+                    }
+                }
             }
         }
     }
