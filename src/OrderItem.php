@@ -385,48 +385,6 @@ class OrderItem
         $this->code = $code;
     }
 
-    /**
-     * @return int
-     */
-    public function getGuarantee()
-    {
-        return $this->guarantee;
-    }
-
-    /**
-     * @param int $guarantee
-     */
-    public function setGuarantee($guarantee)
-    {
-        Validators::assertNumeric($guarantee);
-        $this->guarantee = $guarantee;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGuaranteeType()
-    {
-        return $this->guaranteeType;
-    }
-
-    /**
-     * @param string $guaranteeType
-     */
-    public function setGuaranteeType($guaranteeType)
-    {
-        $types = [
-            "none" => "bez záruky",
-            "hour" => "v hodinách",
-            "day" => "ve dnech",
-            "month" => "v měsících",
-            "year" => "v letech",
-            "life" => "doživotní záruka",
-        ];
-
-        Validators::assertKeyInList($guaranteeType, $types);
-        $this->guaranteeType = $guaranteeType;
-    }
 
     /**
      * @return mixed

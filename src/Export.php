@@ -48,7 +48,6 @@ class Export
     {
         $this->invoices[] = $invoice;
     }
-
     public function addOrder(Order $order)
     {
         $this->orders[] = $order;
@@ -84,11 +83,10 @@ class Export
         echo $xml->asXML();
     }
 
-    public function getIco()
-    {
-        if (!is_null($this->ico) && $this->ico !== '') {
+    public function getIco() {
+        if(!is_null($this->ico) && $this->ico !== '') {
             return $this->ico;
-        } elseif (count($this->invoices)) {
+        } elseif(count($this->invoices)) {
             //ico from invoice
             return $this->invoices[0]->getProviderIdentity()['ico'];
         } else {
@@ -102,14 +100,14 @@ class Export
 		<dat:dataPack id=\"" . $exportId . "\" ico=\"" . $this->getIco() . "\" 
 		application=\"" . $application . "\" version = \"2.0\" note=\"" . $note . "\" 
 		xmlns:dat=\"http://www.stormware.cz/schema/version_2/data.xsd\" 
-		xmlns:typ=\"" . self::NS_TYPE . "\"
-		xmlns:ftr=\"" . self::NS_FTR . "\"
-		xmlns:inv=\"" . Invoice::NS . "\"
-		xmlns:ord=\"" . Order::NS . "\"
+		xmlns:typ=\"". self::NS_TYPE ."\"
+		xmlns:ftr=\"" .  self::NS_FTR . "\"
+		xmlns:inv=\"". Invoice::NS . "\"
+		xmlns:ord=\"". Order::NS . "\"
 		xmlns:adb=\"" . Address::NS . "\">
 		</dat:dataPack>";
 
-        $xml = simplexml_load_string($xmlText); //, SimpleXMLElementExtended::class - not work
+        $xml = simplexml_load_string($xmlText ); //, SimpleXMLElementExtended::class - not work
 
         $i = $a = 0;
 
