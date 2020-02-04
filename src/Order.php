@@ -24,7 +24,7 @@ class Order
     private $roundingDocument = 'math2one';
     private $roundingVAT = 'none';
 
-    private $varNum;
+
     private $date;
     private $dateDelivery;
     private $dateFrom;
@@ -34,8 +34,8 @@ class Order
     private $note;
 
     private $paymentTypeString; //forma uhrady
-    private $accounting;
-    private $symbolicNumber = '0308';
+
+
 
     private $priceNone;
     private $priceLow;
@@ -49,6 +49,8 @@ class Order
 
     private $centre; //stredisko
     private $activity; //cinnost
+    private $priceLevel; //Cenová hladinu odběratele. Jen přijaté objednávky.
+
     /** Zakazka
      * @var string
      */
@@ -73,7 +75,7 @@ class Order
     private $amount = 1;
 
 
-    private $required = ['date', 'varNum', 'text'];
+    private $required = ['date',  'text'];
 
     public function __construct($id)
     {
@@ -163,12 +165,6 @@ class Order
         $this->numberOrder = $order;
     }
 
-    public function setVariableNumber($value)
-    {
-        $value = $this->removeSpaces($value);
-        $this->validateItem('variable number', $value, 20, true);
-        $this->varNum = $value;
-    }
 
     /**
      * @param $value
@@ -264,11 +260,6 @@ class Order
         $this->paymentTypeString = $value;
     }
 
-    public function setAccounting($value)
-    {
-        $this->validateItem('accounting', $value, 19);
-        $this->accounting = $value;
-    }
 
     public function setNote($value)
     {
@@ -288,6 +279,16 @@ class Order
         $this->centre = $value;
     }
 
+    /**
+     * @param $value
+     * @throws OrderException
+     * Cenová hladinu odběratele. Jen přijaté objednávky.
+     */
+    public function setPriceLevel($value)
+    {
+        $this->priceLevel = $value;
+    }
+
 
     public function setActivity($value)
     {
@@ -295,13 +296,6 @@ class Order
         $this->activity = $value;
     }
 
-
-    public function setSymbolicNumber($value)
-    {
-        $value = $this->removeSpaces($value);
-        $this->validateItem('symbolic number', $value, 20, true);
-        $this->symbolicNumber = $value;
-    }
 
     /**
      * Set price in nullable VAT
@@ -493,7 +487,7 @@ class Order
         $header->addChild("ord:numberOrder", $this->numberOrder);
 
 
-        $header->addChild("ord:symVar", $this->varNum);
+
 
         $header->addChild("ord:date", $this->date);
         if (!is_null($this->dateDelivery))
@@ -514,10 +508,7 @@ class Order
             $classification->addChild('typ:classificationVATType', 'nonSubsume', Export::NS_TYPE);
         }*/
 
-        if (!is_null($this->accounting)) {
-            $accounting = $header->addChild("ord:accounting");
-            $accounting->addChild('typ:ids', $this->accounting, Export::NS_TYPE);
-        }
+
 
         $header->addChild("ord:text", $this->text);
 
@@ -527,8 +518,7 @@ class Order
             $paymentType->addChild('typ:ids', $this->paymentTypeString, Export::NS_TYPE);
         }
 
-        $account = $header->addChild("ord:account");
-        $account->addChild('typ:ids', $this->bankShortcut, Export::NS_TYPE);
+
 
         if (isset($this->note)) {
             $header->addChild("ord:note", $this->note);
@@ -551,7 +541,14 @@ class Order
             $activity->addChild('typ:ids', $this->activity, Export::NS_TYPE);
         }
 
-        $header->addChild("ord:symConst", $this->symbolicNumber);
+
+        if(isset($this->priceLevel)) {
+            $pricelevel = $header->addChild("ord:priceLevel");
+            $pricelevel->addChild('typ:ids', $this->priceLevel, Export::NS_TYPE);
+        }
+
+
+
 
         /** Pouze pri exportu z pohody.
          * $liq = $header->addChild("ord:liquidation");
@@ -588,25 +585,23 @@ class Order
             if ($this->foreignCurrency === null) {
                 $hc = $item->addChild("ord:homeCurrency");
                 if ($product->getUnitPrice())
-                    $hc->addChild("typ:unitPrice", $product->getUnitPrice(), Export::NS_TYPE);
+                    $hc->addChild("typ:unitPrice", str_replace(',','.',$product->getUnitPrice()), Export::NS_TYPE);
                 if ($product->getPrice())
-                    $hc->addChild("typ:price", $product->getPrice(), Export::NS_TYPE);
+                    $hc->addChild("typ:price", str_replace(',','.',$product->getPrice()), Export::NS_TYPE);
                 if ($product->getPriceVAT())
-                    $hc->addChild("typ:priceVAT", $product->getPriceVAT(), Export::NS_TYPE);
+                    $hc->addChild("typ:priceVAT", str_replace(',','.',$product->getPriceVAT()), Export::NS_TYPE);
             } else {
                 $fc = $item->addChild('ord:foreignCurrency');
                 if ($product->getForeignUnitPrice())
-                    $fc->addChild("typ:unitPrice", $product->getForeignUnitPrice(),Export::NS_TYPE);
+                    $fc->addChild("typ:unitPrice", str_replace(',','.',$product->getForeignUnitPrice()),Export::NS_TYPE);
                 if ($product->getForeignPrice())
-                    $fc->addChild("typ:price", $product->getForeignPrice(), Export::NS_TYPE);
+                    $fc->addChild("typ:price", str_replace(',','.',$product->getForeignPrice()), Export::NS_TYPE);
                 if ($product->getForeignPriceVAT())
-                    $fc->addChild("typ:priceVAT", $product->getForeignPriceVAT(), Export::NS_TYPE);
+                    $fc->addChild("typ:priceVAT", str_replace(',','.',$product->getForeignPriceVAT()), Export::NS_TYPE);
             }
 
             $item->addChild("ord:note", $product->getNote());
             $item->addChild("ord:code", $product->getCode());
-            $item->addChild("ord:guarantee", $product->getGuarantee());
-            $item->addChild("ord:guaranteeType", $product->getGuaranteeType());
 
             //info o skladove polozce
             if ($product->getStockItem()) {
@@ -672,7 +667,7 @@ class Order
         }
 
         if (isset($data['phone'])) {
-            $address->addChild('typ:mobilPhone', $data['phone']);
+            $address->addChild('typ:phone', $data['phone']);
         }
 
         if (isset($data['email'])) {
@@ -689,19 +684,19 @@ class Order
 
         $hc = $summary->addChild("ord:homeCurrency");
         if (is_null($this->priceNone) === false)
-            $hc->addChild('typ:priceNone', $this->priceNone, Export::NS_TYPE); //cena v nulove sazbe dph
+            $hc->addChild('typ:priceNone', str_replace(',','.',$this->priceNone), Export::NS_TYPE); //cena v nulove sazbe dph
         if (is_null($this->priceLow) === false)
-            $hc->addChild('typ:priceLow', $this->priceLow, Export::NS_TYPE); //cena bez dph ve snizene sazbe (15)
+            $hc->addChild('typ:priceLow', str_replace(',','.',$this->priceLow), Export::NS_TYPE); //cena bez dph ve snizene sazbe (15)
         if (is_null($this->priceLowVAT) === false)
-            $hc->addChild('typ:priceLowVAT', $this->priceLowVAT, Export::NS_TYPE); //dph ve snizene sazbe
+            $hc->addChild('typ:priceLowVAT',str_replace(',','.', $this->priceLowVAT), Export::NS_TYPE); //dph ve snizene sazbe
         if (is_null($this->priceLowSum) === false)
-            $hc->addChild('typ:priceLowSum', $this->priceLowSum, Export::NS_TYPE); //s dph ve snizene sazbe
+            $hc->addChild('typ:priceLowSum', str_replace(',','.',$this->priceLowSum), Export::NS_TYPE); //s dph ve snizene sazbe
         if (is_null($this->priceHigh) === false)
-            $hc->addChild('typ:priceHigh', $this->priceHigh, Export::NS_TYPE); //cena bez dph ve zvysene sazbe (21)
+            $hc->addChild('typ:priceHigh', str_replace(',','.',$this->priceHigh), Export::NS_TYPE); //cena bez dph ve zvysene sazbe (21)
         if (is_null($this->priceHightVAT) === false)
-            $hc->addChild('typ:priceHighVAT', $this->priceHightVAT, Export::NS_TYPE);
+            $hc->addChild('typ:priceHighVAT', str_replace(',','.',$this->priceHightVAT), Export::NS_TYPE);
         if (is_null($this->priceHighSum) === false)
-            $hc->addChild('typ:priceHighSum', $this->priceHighSum, Export::NS_TYPE);
+            $hc->addChild('typ:priceHighSum', str_replace(',','.',$this->priceHighSum), Export::NS_TYPE);
 
         if($this->foreignCurrency !== null) {
             $fc = $summary->addChild('ord:foreignCurrency');
