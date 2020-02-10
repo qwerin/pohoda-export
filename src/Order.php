@@ -50,6 +50,7 @@ class Order
     private $centre; //stredisko
     private $activity; //cinnost
     private $priceLevel; //Cenová hladinu odběratele. Jen přijaté objednávky.
+    private $isReserved; //Rezervováno, pouze přijaté objednávky. Při importu dokladu je možné zásoby zarezervovat na skladě.
 
     /** Zakazka
      * @var string
@@ -287,6 +288,16 @@ class Order
     public function setPriceLevel($value)
     {
         $this->priceLevel = $value;
+    }
+
+    /**
+     * @param $value
+     * @throws OrderException
+     * Cenová hladinu odběratele. Jen přijaté objednávky.
+     */
+    public function setIsReserved($value)
+    {
+        $this->isReserved = $value;
     }
 
 
@@ -545,6 +556,10 @@ class Order
         if(isset($this->priceLevel)) {
             $pricelevel = $header->addChild("ord:priceLevel");
             $pricelevel->addChild('typ:ids', $this->priceLevel, Export::NS_TYPE);
+        }
+        if(isset($this->isReserved)) {
+            $header->addChild("ord:isReserved",$this->isReserved? 'true' : 'false');
+
         }
 
 
