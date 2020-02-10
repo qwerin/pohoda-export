@@ -3,7 +3,7 @@ pohoda-export
 
 Export invoices to XML format used in accounting software POHODA
 
-Třídy umožní importovat faktury a adresy do Stormware POHODA účetnictnictví. Není to kompletní převod, nezahrnuje to všehny parametry, ale umožňuje to generovat XML, základní validaci a hlásí to chyby. 
+Třídy umožní importovat faktury, adresy a objednávky do Stormware POHODA účetnictnictví. Není to kompletní převod, nezahrnuje to všehny parametry, ale umožňuje to generovat XML, základní validaci a hlásí to chyby. 
 Je to něco co vzniklo jako utilitka v SECTION Technologies s.r.o. Další rozšíření a úpravy Mgr. Ivo Toman www.aivo.cz
 
 ## Quick Start
