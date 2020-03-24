@@ -373,7 +373,7 @@ class Order
 
 
 
-    public function setForeignCurrency(string $currency, float $rate)
+    public function setForeignCurrency(string $currency, float $rate=null)
     {
         $this->foreignCurrency = $currency;
         $this->rate = $rate;
@@ -716,7 +716,9 @@ class Order
         if($this->foreignCurrency !== null) {
             $fc = $summary->addChild('ord:foreignCurrency');
             $fc->addChild('typ:currency', null, Export::NS_TYPE)->addChild('typ:ids', $this->foreignCurrency, Export::NS_TYPE);
-            $fc->addChild('typ:rate', $this->rate,Export::NS_TYPE);
+            if($this->rate !== null) {
+                $fc->addChild('typ:rate', $this->rate, Export::NS_TYPE);
+            }
             $fc->addChild('typ:amount', $this->amount, Export::NS_TYPE);
         }
 
