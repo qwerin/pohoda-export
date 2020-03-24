@@ -139,7 +139,7 @@ class Address implements IExport
 		}
 
 		if ($address->getPhone()) {
-			$xmlAd->addChild('typ:mobilPhone', $address->getPhone());
+			$xmlAd->addChild('typ:phone', $address->getPhone());
 		}
 
 		if ($address->getEmail()) {
