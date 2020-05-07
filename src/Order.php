@@ -52,6 +52,8 @@ class Order
     private $priceLevel; //Cenová hladinu odběratele. Jen přijaté objednávky.
     private $isReserved; //Rezervováno, pouze přijaté objednávky. Při importu dokladu je možné zásoby zarezervovat na skladě.
 
+    private $regVATinEU;
+
     /** Zakazka
      * @var string
      */
@@ -279,6 +281,13 @@ class Order
         $this->validateItem('centre', $value, 19);
         $this->centre = $value;
     }
+
+    public function regVATinEU($value)
+    {
+        $this->regVATinEU = $value;
+    }
+
+
 
     /**
      * @param $value
@@ -560,6 +569,10 @@ class Order
         if(isset($this->isReserved)) {
             $header->addChild("ord:isReserved",$this->isReserved? 'true' : 'false');
 
+        }
+        if(isset($this->regVATinEU)) {
+            $pricelevel = $header->addChild("ord:regVATinEU");
+            $pricelevel->addChild('typ:ids', $this->regVATinEU, Export::NS_TYPE);
         }
 
 
