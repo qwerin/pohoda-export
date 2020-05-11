@@ -628,7 +628,9 @@ class Order
                     $fc->addChild("typ:priceVAT", str_replace(',','.',$product->getForeignPriceVAT()), Export::NS_TYPE);
             }
 
-            $item->addChild("ord:note", $product->getNote());
+            if($product->getNote()!=null) {
+                $item->addChild("ord:note", $product->getNote());
+            }
             $item->addChild("ord:code", $product->getCode());
 
             //info o skladove polozce
