@@ -34,8 +34,8 @@ class Address
 			$this->street = $this->validateItem('street', $value['street'], 64);
 		}
 		if (isset($value['zip'])) {
-			$value['zip'] = $this->removeSpaces($value['zip']);
-			$this->zip = $this->validateItem('zip', $value['zip'], 15, true);
+		//	$value['zip'] = $this->removeSpaces($value['zip']);
+			$this->zip = $this->validateItem('zip', $value['zip'], 15, false);
 		}
 		if (isset($value['city'])) {
 			$this->city = $this->validateItem('city', $value['city'], 45);
