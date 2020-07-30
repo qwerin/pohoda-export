@@ -17,6 +17,10 @@ class Order
     private $cancel; //cislo stornovaneho dokumentu
     private $cancelNumber; //ciselna rada pro storno
 
+    private $delete; //cislo delete dokumentu
+
+    private $update=false;
+
     private $withVAT = false;
 
     public $type = self::ORDER_TYPE;
@@ -461,9 +465,16 @@ class Order
         $this->cancel = $id;
     }
 
+    public function update($val){
+        $this->update=$val;
+    }
+
     public function cancelNumber($number)
     {
         $this->cancelNumber = $number;
+    }
+    public function orderDelete($id){
+        $this->delete = $id;
     }
 
 
@@ -478,8 +489,17 @@ class Order
                 ->addChild('sourceDocument', null, Export::NS_TYPE)
                 ->addChild('number',  $this->cancel, Export::NS_TYPE);
             $this->exportCancelHeader($xmlOrder->addChild("ord:orderHeader", null, self::NS));
+        }elseif ($this->delete){
+            $this->exportDeleteHeader($xmlOrder->addChild("ord:actionType", null, self::NS));
         } else {
+            if($this->update) {
+
+                $this->exportActionTypeUpdate($xmlOrder->addChild("ord:actionType", null, self::NS));
+            }
+
+
             $this->exportHeader($xmlOrder->addChild("ord:orderHeader", null, self::NS));
+
             if (!empty($this->items)) {
                 $this->exportDetail($xmlOrder->addChild("ord:orderDetail", null, self::NS));
             }
@@ -496,6 +516,28 @@ class Order
         if($this->cancelNumber !== null) {
             $num = $header->addChild("ord:numberOrder");
             $num->addChild('typ:ids', $this->cancelNumber, Export::NS_TYPE);
+        }
+
+    }
+
+    private function exportDeleteHeader(SimpleXMLElement $header)
+    {
+        $detete=  $header->addChild("ord:delete");
+        $filter= $detete->addChild("ftr:filter", $this->text, Export::NS_FTR);
+        $filter->addAttribute('agenda','prijate_objednavky');
+
+        if($this->delete !== null) {
+            $filter->addChild('ftr:number', $this->delete, Export::NS_FTR);
+        }
+
+    }
+    private function exportActionTypeUpdate(SimpleXMLElement $actionType)
+    {
+        $update=  $actionType->addChild("ord:update");
+        $filter= $update->addChild("ftr:filter", '',Export::NS_FTR);
+        $filter->addAttribute('agenda','prijate_objednavky');
+        if($this->numberOrder !== null) {
+            $filter->addChild('ftr:number', $this->numberOrder, Export::NS_FTR);
         }
 
     }
