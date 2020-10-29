@@ -654,19 +654,19 @@ class Order
 
             if ($this->foreignCurrency === null) {
                 $hc = $item->addChild("ord:homeCurrency");
-                if ($product->getUnitPrice())
+                if ($product->getUnitPrice() !==null)
                     $hc->addChild("typ:unitPrice", str_replace(',','.',$product->getUnitPrice()), Export::NS_TYPE);
-                if ($product->getPrice())
+                if ($product->getPrice()!==null)
                     $hc->addChild("typ:price", str_replace(',','.',$product->getPrice()), Export::NS_TYPE);
-                if ($product->getPriceVAT())
+                if ($product->getPriceVAT()!==null)
                     $hc->addChild("typ:priceVAT", str_replace(',','.',$product->getPriceVAT()), Export::NS_TYPE);
             } else {
                 $fc = $item->addChild('ord:foreignCurrency');
-                if ($product->getForeignUnitPrice())
+                if ($product->getForeignUnitPrice()!==null)
                     $fc->addChild("typ:unitPrice", str_replace(',','.',$product->getForeignUnitPrice()),Export::NS_TYPE);
-                if ($product->getForeignPrice())
+                if ($product->getForeignPrice()!==null)
                     $fc->addChild("typ:price", str_replace(',','.',$product->getForeignPrice()), Export::NS_TYPE);
-                if ($product->getForeignPriceVAT())
+                if ($product->getForeignPriceVAT()!==null)
                     $fc->addChild("typ:priceVAT", str_replace(',','.',$product->getForeignPriceVAT()), Export::NS_TYPE);
             }
 
