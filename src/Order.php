@@ -207,6 +207,14 @@ class Order
         $this->validateItem('date from', $value, false, false, true);
         $this->datFrom = $this->convertDate($value);
     }
+    /**
+     * @param $value
+     * @throws OrderException
+     * math2one,none
+     */
+    public function setRoundingDocument($value){
+        $this->roundingDocument=$value;
+    }
 
     /**
      * @param $value
