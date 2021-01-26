@@ -496,7 +496,7 @@ class Invoice
         } else {
             //nezahrnovat do dph
             $classification->addChild('typ:ids', 'UN', Export::NS_TYPE);
-            $classification->addChild('typ:classificationVATType', 'nonSubsume', Export::NS_TYPE);
+           // $classification->addChild('typ:classificationVATType', 'nonSubsume', Export::NS_TYPE);
         }
 
         if (!is_null($this->accounting)) {
