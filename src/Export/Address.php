@@ -53,10 +53,10 @@ class Address implements IExport
         $filter = $xml->addChild('adb:add', null, self::NS)
             ->addChild('ftr:filter', null, Export::NS_FTR);
         if ($this->getIdentity()->hasId()) {
-            $ext = $filter->addChild('ftr:extId', $this->getIdentity()->getId(), Export::NS_FTR);
-            /*$ext = $filter->addChild('ftr:extId', null, Export::NS_FTR);
+            //$ext = $filter->addChild('ftr:extId', $this->getIdentity()->getId(), Export::NS_FTR);
+            $ext = $filter->addChild('ftr:extId', null, Export::NS_FTR);
             $ext->addChild('typ:ids', $this->getIdentity()->getId(), Export::NS_TYPE);
-            */
+
             $ext->addChild('tpy:exSystemName', $this->systemName, Export::NS_TYPE);
         } else {
             $adr = $this->getIdentity()->getAddress();
@@ -83,11 +83,11 @@ class Address implements IExport
     {
         $identity = $this->getIdentity();
 
-        if ($identity->hasId()) {
+        if ($identity->hasId()&&false) {
             $xml->addChild('typ:id', $this->getIdentity()->getId(), Export::NS_TYPE);
-            /* $ext = $xml->addChild('typ:extId', null, Export::NS_TYPE);
-             $ext->addChild('typ:ids', $identity->getId(), Export::NS_TYPE);*/
-            //	$ext->addChild('tpy:exSystemName', 'Unio', Export::NS_TYPE);
+             $ext = $xml->addChild('typ:extId', null, Export::NS_TYPE);
+             $ext->addChild('typ:ids', $identity->getId(), Export::NS_TYPE);
+            	$ext->addChild('tpy:exSystemName', $this->getSystemName(), Export::NS_TYPE);
         } else {
 
             $this->exportAddressXml($xml, $identity->getAddress());
