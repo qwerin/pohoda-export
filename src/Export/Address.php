@@ -18,14 +18,19 @@ class Address implements IExport
     /** @var Identity $identity */
     private $identity;
 
+    private $systemName;
+
+
+
 
     /**
      * Address constructor.
      * @param Identity $identity
      */
-    public function __construct(Identity $identity)
+    public function __construct(Identity $identity,$sysname="muj")
     {
         $this->identity = $identity;
+        $this->systemName=$sysname;
     }
 
 
@@ -48,10 +53,11 @@ class Address implements IExport
         $filter = $xml->addChild('adb:add', null, self::NS)
             ->addChild('ftr:filter', null, Export::NS_FTR);
         if ($this->getIdentity()->hasId()) {
-            $filter->addChild('typ:ids', $this->getIdentity()->getId(), Export::NS_TYPE);
+            $ext = $filter->addChild('ftr:extId', $this->getIdentity()->getId(), Export::NS_FTR);
             /*$ext = $filter->addChild('ftr:extId', null, Export::NS_FTR);
             $ext->addChild('typ:ids', $this->getIdentity()->getId(), Export::NS_TYPE);
-            $ext->addChild('tpy:exSystemName', 'Unio', Export::NS_TYPE);*/
+            */
+            $ext->addChild('tpy:exSystemName', $this->systemName, Export::NS_TYPE);
         } else {
             $adr = $this->getIdentity()->getAddress();
             $filter->addChild('ftr:company', $adr->getCompany(), Export::NS_FTR);
@@ -166,5 +172,21 @@ class Address implements IExport
     public function getId()
     {
         return $this->identity->getId();
+    }
+
+    /**
+     * @return string
+     */
+    public function getSystemName()
+    {
+        return $this->systemName;
+    }
+
+    /**
+     * @param string $systemName
+     */
+    public function setSystemName($systemName)
+    {
+        $this->systemName = $systemName;
     }
 }
