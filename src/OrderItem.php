@@ -12,6 +12,7 @@ class OrderItem
     const VAT_HIGH = "high";
     const VAT_LOW = "low";
     const VAT_THIRD = "third";
+    const VAT_HISTORY_HIGH = "historyHigh";
 
     private $text;
     private $quantity = '1.0';

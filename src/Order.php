@@ -58,6 +58,10 @@ class Order
 
     private $regVATinEU;
 
+    private $MOSS;
+
+    private $evidentiaryResourcesMOSS;
+
     /** Zakazka
      * @var string
      */
@@ -297,6 +301,16 @@ class Order
     public function regVATinEU($value)
     {
         $this->regVATinEU = $value;
+    }
+
+    public function MOSS($moss)
+    {
+        $this->MOSS = $moss;
+    }
+
+    public function evidentiaryResourcesMOSS($evidentiaryResourcesMOSS)
+    {
+        return $this->evidentiaryResourcesMOSS=$evidentiaryResourcesMOSS;
     }
 
 
@@ -624,6 +638,17 @@ class Order
             $pricelevel = $header->addChild("ord:regVATinEU");
             $pricelevel->addChild('typ:ids', $this->regVATinEU, Export::NS_TYPE);
         }
+
+        if(isset($this->MOSS)) {
+            $moss = $header->addChild("ord:MOSS");
+            $moss->addChild('typ:ids', $this->MOSS, Export::NS_TYPE);
+        }
+
+        if(isset($this->evidentiaryResourcesMOSS)) {
+            $evidentiaryResourcesMOSS = $header->addChild("ord:evidentiaryResourcesMOSS");
+            $evidentiaryResourcesMOSS->addChild('typ:ids', $this->evidentiaryResourcesMOSS, Export::NS_TYPE);
+        }
+
 
 
 
