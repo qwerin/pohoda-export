@@ -489,14 +489,15 @@ class Invoice
             $header->addChild("inv:dateAccounting", $this->dateAccounting);
 
 
-        $classification = $header->addChild("inv:classificationVAT");
         if ($this->withVAT) {
             //tuzemske plneni
+            $classification = $header->addChild("inv:classificationVAT");
             $classification->addChild('typ:classificationVATType', 'inland', Export::NS_TYPE);
         } else {
             //nezahrnovat do dph
-            $classification->addChild('typ:ids', 'UN', Export::NS_TYPE);
-            $classification->addChild('typ:classificationVATType', 'nonSubsume', Export::NS_TYPE);
+            $classification = $header->addChild("inv:classificationVAT");
+            // $classification->addChild('typ:ids', 'UN', Export::NS_TYPE);
+            //  $classification->addChild('typ:classificationVATType', 'nonSubsume', Export::NS_TYPE);
         }
 
         if (!is_null($this->accounting)) {
