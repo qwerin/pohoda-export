@@ -172,7 +172,8 @@ class OrderItem
             self::VAT_NONE => "bez DPH",
             self::VAT_HIGH => "Základní sazba",
             self::VAT_LOW => "Snížena sazba",
-            self::VAT_THIRD => "2. snížená sazba"
+            self::VAT_THIRD => "2. snížená sazba",
+            self::VAT_HISTORY_HIGH => "historicka sazba"
         ];
 
         Validators::assertKeyInList($rateVAT, $rates);
